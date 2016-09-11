@@ -11,7 +11,7 @@ public class Launcher {
 	/** Main */
 	public static void main(String[] args){
 		GameBoard debug = new GameBoard();
-		System.out.println(debug.clone().clone());
+		System.out.println(debug.flipView());
 	}
 	
 }

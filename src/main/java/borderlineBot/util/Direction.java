@@ -6,14 +6,16 @@ import lombok.Getter;
 @AllArgsConstructor
 /** Representation of the 4 main Directions */
 public enum Direction{
-	UP(0),
-	RIGHT(1),
-	DOWN(2),
-	LEFT(3);
+	UP(0, new Point(0, -1)),
+	RIGHT(1, new Point(1, 0)),
+	DOWN(2, new Point(0, 1)),
+	LEFT(3, new Point(-1, 0));
 	
 	
 	/** Returns the index of this Direction */
 	@Getter private int index;
+	/** The movement that is implied by this Direction */
+	@Getter private Point dir;
 	
 	
 	/** Returns the Direction clockwise to this Direction */
