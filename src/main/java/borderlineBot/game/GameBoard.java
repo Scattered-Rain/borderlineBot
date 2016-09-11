@@ -127,6 +127,12 @@ public class GameBoard{
 		return new GameBoard(view, newBoard, activePlayer);
 	}
 	
+	/** Returns the Hash value of this map */
+	public long hash(){
+		//TODO: Implement Hashing!
+		return -1;
+	}
+	
 	/** Returns String representing this Game Board */
 	public String toString(){
 		StringBuffer buffer = new StringBuffer();
@@ -179,6 +185,12 @@ public class GameBoard{
 			this.inBounds = false;
 		}
 		
+		
+		/** Returns value representing this unit for the purposes of hashing */
+		public int hashValue(){
+			//TODO: Implement this
+			return -1;
+		}
 		
 		/** Returns String representing this Unit */
 		public String toString(){
