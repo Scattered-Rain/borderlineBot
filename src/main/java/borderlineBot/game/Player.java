@@ -6,9 +6,12 @@ import lombok.Getter;
 @AllArgsConstructor
 /** Enum containing all two Players */
 public enum Player{
-	NONE(0, false), //Neutral util player, no opponent to anyone
-	BLUE(1, true),
-	RED(2, true);
+	/** Neutral Player, used for debug, maybe */
+	NONE(0, false),
+	/** Red Player (Player making the first move) */
+	RED(1, true),
+	/** Blue Player */
+	BLU(2, true);
 	
 	
 	/** Returns id of this player */

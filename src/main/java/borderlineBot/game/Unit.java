@@ -7,9 +7,12 @@ import lombok.Getter;
 @AllArgsConstructor
 /** Defines the unit types in the game */
 public enum Unit{
+	/** Placeholder Unit */
 	NONE(0, false, new int[]{0, 0, 0, 0}),
-	FRONT(1, true, new int[]{1, 2, 3, 4}),
-	BACK(2, true, new int[]{2, 3, 4, 1});
+	/** Unit which faces opponent with a ONE (Front Row) */
+	ONE(1, true, new int[]{1, 2, 3, 4}),
+	/** Unit which faces opponent with a TWO (Back Row) */
+	TWO(2, true, new int[]{2, 3, 4, 1});
 	
 	
 	/** The id of this Unit type */

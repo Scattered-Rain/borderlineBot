@@ -1,5 +1,6 @@
 package borderlineBot;
 
+import borderlineBot.game.GameBoard;
 import borderlineBot.util.RNG;
 
 /** Launches the application */
@@ -7,7 +8,8 @@ public class Launcher {
 	
 	/** Main */
 	public static void main(String[] args){
-		System.out.println(RNG.nextDouble());
+		GameBoard debug = new GameBoard();
+		System.out.println(debug);
 	}
 	
 }
