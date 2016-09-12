@@ -36,10 +36,10 @@ public class GameBoard{
 	private void init(){
 		//Where the player rows are
 		final Tile empty = new Tile();
-		final Tile blueBack = new Tile(Player.BLU, Unit.TWO);
-		final Tile blueFront = new Tile(Player.BLU, Unit.ONE);
-		final Tile redBack = new Tile(Player.RED, Unit.TWO);
-		final Tile redFront = new Tile(Player.RED, Unit.ONE);
+		final Tile blueBack = new Tile(LOCAL_VIEW.getOpponent(), Unit.TWO);
+		final Tile blueFront = new Tile(LOCAL_VIEW.getOpponent(), Unit.ONE);
+		final Tile redBack = new Tile(LOCAL_VIEW, Unit.TWO);
+		final Tile redFront = new Tile(LOCAL_VIEW, Unit.ONE);
 		final Tile[] rowMakeup = new Tile[]{blueBack, blueFront, empty, empty, empty, empty, empty, redFront, redBack};
 		//Sets up board
 		this.board = new Tile[BOARD_SIZE.getY()][BOARD_SIZE.getX()];
@@ -73,15 +73,14 @@ public class GameBoard{
 		}
 	}
 	
+	/** Constructs new Move using the given parameters */
+	public Move createMove(Player player, Point unit, Direction moveDir){
+		return new Move(player, unit, moveDir, this);
+	}
+	
 	/** Returns the range of the unit at the given point in the given direction (always 0 for empty tiles) */
 	public int getRange(Point point, Direction dir){
-		Tile tile = getTile(point);
-		if(tile.isEmpty()){
-			return 0;
-		}
-		else{
-			return tile.getUnit().getMirroredRange(dir, !tile.getPlayer().isSame(view));
-		}
+		return getTile(point).getRange(dir, this);
 	}
 	
 	/** Sets the view of this board to the given Player (Turns the board around) */
@@ -188,8 +187,18 @@ public class GameBoard{
 		}
 		
 		
+		/** Returns the range of the unit at this Tile in the given global direction (0 for all empty tiles) */
+		public int getRange(Direction dir, GameBoard board){
+			if(isEmpty()){
+				return 0;
+			}
+			else{
+				return getUnit().getMirroredRange(dir, !getPlayer().isSame(board.getView()));
+			}
+		}
+		
 		/** Returns value representing this unit for the purposes of hashing */
-		public int hashValue(){
+		public int hashValue(GameBoard board){
 			//TODO: Implement this
 			return -1;
 		}
@@ -212,6 +221,7 @@ public class GameBoard{
 		
 	}
 	
+	
 	/** This Object represents a single move on the GameBoard */
 	public static class Move{
 		
@@ -224,10 +234,16 @@ public class GameBoard{
 		
 		
 		/** Constructs new Move (based on Local View) */
-		private Move(Player player, Point unit, Direction moveDir){
+		private Move(Player player, Point unit, Direction moveDir, GameBoard board){
 			this.player = player;
-			this.unit = unit;
-			this.moveDir = moveDir;
+			if(board.getView().isSame(LOCAL_VIEW) || board.getView().isSame(Player.NONE)){
+				this.unit = unit;
+				this.moveDir = moveDir;
+			}
+			else{
+				this.unit = BOARD_SIZE.substract(new Point(1, 1)).substract(unit);
+				this.moveDir = moveDir.turnBack();
+			}
 		}
 		
 		
@@ -240,6 +256,21 @@ public class GameBoard{
 			else{
 				return BOARD_SIZE.substract(new Point(1, 1)).substract(unit);
 			}
+		}
+		
+		/** Returns the Tile of the Unit */
+		public Tile getUnitTile(GameBoard board){
+			return board.getTile(getUnit(board));
+		}
+		
+		/** Returns The Point onto which the Unit should move */
+		public Point getTarget(GameBoard board){
+			return getUnit(board).add((getMoveDir(board).getDir().scale(getUnitTile(board).getRange(moveDir, board))));
+		}
+		
+		/** Returns the Tile onto which the Unit should move to */
+		public Tile getTargetTile(GameBoard board){
+			return board.getTile(getTarget(board));
 		}
 		
 		/** Returns the direction the unit is supposed to move in based on the given view */
@@ -265,7 +296,10 @@ public class GameBoard{
 			if(unitTile.isEmpty || !unitTile.getPlayer().isSame(player)){
 				return false;
 			}
-			//TODO: Finish this
+			Tile target = getTargetTile(board);
+			if(!target.inBounds || target.getPlayer()==player){
+				return false;
+			}
 			return true;
 		}
 		

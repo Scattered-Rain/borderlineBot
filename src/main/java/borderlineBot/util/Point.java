@@ -29,6 +29,16 @@ public class Point{
 		return new Point(x-point.getX(), y-point.getY());
 	}
 	
+	/** Returns the product of this Point with the given Point, rounded to Integers */
+	public Point multiply(Point point){
+		return new Point(x*point.getX(), y*point.getY());
+	}
+	
+	/** Returns Point of this Point scaled by given value rounded to Integers */
+	public Point scale(int factor){
+		return this.multiply(new Point(factor, factor));
+	}
+	
 	/** Returns an int array of the form [x, y] */
 	public int[] toArray(){
 		return new int[]{x, y};
