@@ -1,5 +1,8 @@
 package borderlineBot.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import borderlineBot.util.Direction;
 import borderlineBot.util.Point;
 import lombok.Getter;
@@ -115,6 +118,28 @@ public class GameBoard{
 		return Player.NONE;
 	}
 	
+	/** Returns an exhaustive list containing all Moves that can legally be made on this Board */
+	public List<Move> generateAllLegalMoves(){
+		List<Move> allMoves = new ArrayList<Move>();
+		for(int cy=0; cy<BOARD_SIZE.getY(); cy++){
+			for(int cx=0; cx<BOARD_SIZE.getX(); cx++){
+				Point point = new Point(cx, cy);
+				Tile tile = this.getTile(point);
+				if(!tile.isEmpty() && tile.getPlayer().isSame(this.getActivePlayer())){
+					for(int c=0; c<Direction.values().length; c++){
+						allMoves.add(this.createMove(this.getActivePlayer(), point, Direction.values()[c]));
+					}
+				}
+			}
+		}
+		List<Move> allLegalMoves = new ArrayList<Move>();
+		for(int c=0; c<allMoves.size(); c++){
+			if(allMoves.get(c).checkLegal(this)){
+				allLegalMoves.add(allMoves.get(c));
+			}
+		}
+		return allLegalMoves;
+	}
 	
 	
 	/** Returns deep Clone of this GameBoard */
@@ -227,9 +252,9 @@ public class GameBoard{
 		
 		/** Player enacting this move */
 		@Getter private Player player;
-		/** The location of the unit that is to be moved (based on given view) */
+		/** The location of the unit that is to be moved (based on local view) */
 		private Point unit;
-		/** The direction in which the unit is to move (based on given view) */
+		/** The direction in which the unit is to move (based on local view) */
 		private Direction moveDir;
 		
 		
