@@ -116,6 +116,8 @@ public class GameBoard{
 		return Player.NONE;
 	}
 	
+	
+	
 	/** Returns deep Clone of this GameBoard */
 	public GameBoard clone(){
 		Tile[][] newBoard = new Tile[board.length][board[0].length];
@@ -206,6 +208,65 @@ public class GameBoard{
 				buffer.append('[').append(player).append(' ').append(unit).append(']');
 				return buffer.toString();
 			}
+		}
+		
+	}
+	
+	/** This Object represents a single move on the GameBoard */
+	public static class Move{
+		
+		/** Player enacting this move */
+		@Getter private Player player;
+		/** The location of the unit that is to be moved (based on given view) */
+		private Point unit;
+		/** The direction in which the unit is to move (based on given view) */
+		private Direction moveDir;
+		
+		
+		/** Constructs new Move (based on Local View) */
+		private Move(Player player, Point unit, Direction moveDir){
+			this.player = player;
+			this.unit = unit;
+			this.moveDir = moveDir;
+		}
+		
+		
+		/** Returns the point where the unit that is to be moved is located at based on the given view */
+		public Point getUnit(GameBoard board){
+			Player view = board.getView();
+			if(view.isSame(LOCAL_VIEW) || view.isSame(Player.NONE)){
+				return unit;
+			}
+			else{
+				return BOARD_SIZE.substract(new Point(1, 1)).substract(unit);
+			}
+		}
+		
+		/** Returns the direction the unit is supposed to move in based on the given view */
+		public Direction getMoveDir(GameBoard board){
+			Player view = board.getView();
+			if(view.isSame(LOCAL_VIEW) || view.isSame(Player.NONE)){
+				return moveDir;
+			}
+			else{
+				return moveDir.turnBack();
+			}
+		}
+		
+		/** Returns whether this Move is legal on the given board */
+		public boolean checkLegal(GameBoard board){
+			if(board.checkWin().isLegalPlayer()){
+				return false;
+			}
+			if(!board.getActivePlayer().isSame(player)){
+				return false;
+			}
+			Tile unitTile = board.getTile(getUnit(board));
+			if(unitTile.isEmpty || !unitTile.getPlayer().isSame(player)){
+				return false;
+			}
+			//TODO: Finish this
+			return true;
 		}
 		
 	}
