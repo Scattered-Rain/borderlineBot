@@ -258,6 +258,11 @@ public class GameBoard{
 			}
 		}
 		
+		/** Returns the Range this Move actually has */
+		public int getRange(GameBoard board){
+			return getUnitTile(board).getRange(moveDir, board);
+		}
+		
 		/** Returns the Tile of the Unit */
 		public Tile getUnitTile(GameBoard board){
 			return board.getTile(getUnit(board));
@@ -265,7 +270,7 @@ public class GameBoard{
 		
 		/** Returns The Point onto which the Unit should move */
 		public Point getTarget(GameBoard board){
-			return getUnit(board).add((getMoveDir(board).getDir().scale(getUnitTile(board).getRange(moveDir, board))));
+			return getUnit(board).add((getMoveDir(board).getDir().scale(getRange(board))));
 		}
 		
 		/** Returns the Tile onto which the Unit should move to */
