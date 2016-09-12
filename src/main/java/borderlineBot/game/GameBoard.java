@@ -30,7 +30,7 @@ public class GameBoard{
 		board[3][3] = new Tile(Player.RED, Unit.TWO);//TODO: Remove this debug Unit
 	}
 	
-	/** Constructs new Board for cloning purposes */
+	/** Constructs new Board for CLONING purposes */
 	private GameBoard(Player view, Tile[][] board, Player moving, Player winner){
 		this.view = view;
 		this.board = board;
@@ -38,7 +38,7 @@ public class GameBoard{
 		this.winner = winner;
 	}
 	
-	/** Constructs new Board for moving purposes (recalculates Winning) */
+	/** Constructs new Board for MOVING purposes (recalculates Winning) */
 	private GameBoard(Player view, Tile[][] board, Player moving){
 		this.view = view;
 		this.board = board;
