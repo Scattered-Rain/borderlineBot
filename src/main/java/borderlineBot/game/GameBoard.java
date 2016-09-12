@@ -24,7 +24,7 @@ public class GameBoard{
 		init();
 		this.view = LOCAL_VIEW;
 		this.activePlayer = LOCAL_VIEW;
-		board[3][3] = new Tile(Player.BLU, Unit.TWO);//TODO: Remove this debug Unit
+		board[3][3] = new Tile(Player.RED, Unit.TWO);//TODO: Remove this debug Unit
 	}
 	
 	/** Constructs new Board for cloning purposes */
@@ -68,7 +68,7 @@ public class GameBoard{
 		//Locally finds Tile
 		int x = local.getX();
 		int y = local.getY();
-		if(y>=0 && x>=0 && y<board.length && x<board.length){
+		if(y>=0 && x>=0 && y<BOARD_SIZE.getY() && x<BOARD_SIZE.getX()){
 			return board[y][x];
 		}
 		else{

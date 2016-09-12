@@ -12,6 +12,7 @@ public class Launcher {
 	public static void main(String[] args){
 		GameBoard debug = new GameBoard();
 		System.out.println(debug);
+		System.out.println(debug.generateAllLegalMoves().size());
 	}
 	
 }
