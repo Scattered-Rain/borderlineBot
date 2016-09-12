@@ -14,6 +14,8 @@ public class GameBoard{
 	@Getter private Player view;
 	/** The board as represented with Tiles (Should only be accessed over getTile() method) */
 	private Tile[][] board;
+	/** If this Game Board has a Winner, else Player NONE */
+	@Getter private Player winner;
 	
 	/** The Player that is currently allowed to make a move */
 	@Getter private Player activePlayer;
@@ -24,14 +26,24 @@ public class GameBoard{
 		init();
 		this.view = LOCAL_VIEW;
 		this.activePlayer = LOCAL_VIEW;
+		this.winner = Player.NONE;
 		board[3][3] = new Tile(Player.RED, Unit.TWO);//TODO: Remove this debug Unit
 	}
 	
 	/** Constructs new Board for cloning purposes */
+	private GameBoard(Player view, Tile[][] board, Player moving, Player winner){
+		this.view = view;
+		this.board = board;
+		this.activePlayer = moving;
+		this.winner = winner;
+	}
+	
+	/** Constructs new Board for moving purposes (recalculates Winning) */
 	private GameBoard(Player view, Tile[][] board, Player moving){
 		this.view = view;
 		this.board = board;
 		this.activePlayer = moving;
+		this.winner = checkWin();
 	}
 	
 	
@@ -104,17 +116,72 @@ public class GameBoard{
 		return this;
 	}
 	
+	/** Returns GameBoard which is equivalent to this with the given Move made, if Move illegal returns null */
+	public GameBoard move(Move move){
+		if(move.checkLegal(this)){
+			Player prevView = view;
+			this.view = LOCAL_VIEW;
+			Tile[][] newBoard = new Tile[board.length][board[0].length];
+			for(int cy=0; cy<newBoard.length; cy++){
+				for(int cx=0; cx<newBoard[0].length; cx++){
+					newBoard[cy][cx] = board[cy][cx];
+				}
+			}
+			Tile empty = new Tile();
+			newBoard[move.getUnit(this).getY()][move.getUnit(this).getX()] = empty;
+			for(int c=1; c<move.getRange(this)-1; c++){
+				Point jumpPoint = move.getUnit(this).add(move.getMoveDir(this).getDir().scale(c));
+				Tile jumpTile = newBoard[jumpPoint.getY()][jumpPoint.getX()];
+				if(jumpTile.getPlayer().isOpponent(move.getPlayer())){
+					newBoard[jumpPoint.getY()][jumpPoint.getX()] = empty;
+				}
+			}
+			newBoard[move.getTarget(this).getY()][move.getTarget(this).getX()] = move.getUnitTile(this);
+			GameBoard newGameBoard = new GameBoard(prevView, newBoard, this.activePlayer.getOpponent());
+			this.view = prevView;
+			return newGameBoard;
+		}
+		//This should never, ever happen:
+		return null;
+	}
+	
 	/** Returns NONE Player if game is still in progress and the winning Player if the game has been won */
-	public Player checkWin(){
+	private Player checkWin(){
 		final int[] lastLines = new int[]{0, BOARD_SIZE.getY()-1};
-		final Player[] lineHolders = new Player[]{view.getOpponent(), view};
+		Player base = view;
+		if(base.isSame(Player.NONE)){
+			base = LOCAL_VIEW;
+		}
+		//Check borderline
+		final Player[] lineHolders = new Player[]{base.getOpponent(), base};
 		for(int c=0; c<lastLines.length; c++){
 			for(int cx=0; cx<BOARD_SIZE.getX(); cx++){
-				if(getTile(new Point(cx, lastLines[c])).getPlayer().isOpponent(lineHolders[c])){
-					return getTile(new Point(cx, lastLines[c])).getPlayer().getOpponent();
+				Tile tile = getTile(new Point(cx, lastLines[c]));
+				if(!tile.isEmpty){
+					if(tile.getPlayer().isOpponent(lineHolders[c])){
+						return getTile(new Point(cx, lastLines[c])).getPlayer();
+					}
 				}
 			}
 		}
+		//Check complete opponent wipe out
+		int[] unitsOfPlayers = new int[]{0, 0};
+		for(int cy=0; cy<BOARD_SIZE.getY(); cy++){
+			for(int cx=0; cx<BOARD_SIZE.getX(); cx++){
+				Tile tile = getTile(new Point(cx, cy));
+				for(int c=0; c<lineHolders.length; c++){
+					if(tile.getPlayer().isSame(lineHolders[c])){
+						unitsOfPlayers[c]++;
+					}
+				}
+			}
+		}
+		for(int c=0; c<lineHolders.length; c++){
+			if(unitsOfPlayers[c]==0){
+				return lineHolders[c].getOpponent();
+			}
+		}
+		//No victories
 		return Player.NONE;
 	}
 	
@@ -150,7 +217,7 @@ public class GameBoard{
 				newBoard[cy][cx] = board[cy][cx];
 			}
 		}
-		return new GameBoard(view, newBoard, activePlayer);
+		return new GameBoard(view, newBoard, activePlayer, winner);
 	}
 	
 	/** Returns the Hash value of this map */
@@ -316,7 +383,7 @@ public class GameBoard{
 		
 		/** Returns whether this Move is legal on the given board */
 		public boolean checkLegal(GameBoard board){
-			if(board.checkWin().isLegalPlayer()){
+			if(board.getWinner().isLegalPlayer()){
 				return false;
 			}
 			if(!board.getActivePlayer().isSame(player)){
