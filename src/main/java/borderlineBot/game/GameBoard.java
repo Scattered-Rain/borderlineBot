@@ -16,6 +16,8 @@ public class GameBoard{
 	private Tile[][] board;
 	/** If this Game Board has a Winner, else Player NONE */
 	@Getter private Player winner;
+	/** The turn of this state */
+	@Getter private int turn;
 	
 	/** The Player that is currently allowed to make a move */
 	@Getter private Player activePlayer;
@@ -27,23 +29,25 @@ public class GameBoard{
 		this.view = LOCAL_VIEW;
 		this.activePlayer = LOCAL_VIEW;
 		this.winner = Player.NONE;
-		board[3][3] = new Tile(Player.RED, Unit.TWO);//TODO: Remove this debug Unit
+		this.turn = 0;
 	}
 	
 	/** Constructs new Board for CLONING purposes */
-	private GameBoard(Player view, Tile[][] board, Player moving, Player winner){
+	private GameBoard(Player view, Tile[][] board, Player moving, int turn, Player winner){
 		this.view = view;
 		this.board = board;
 		this.activePlayer = moving;
 		this.winner = winner;
+		this.turn = turn;
 	}
 	
 	/** Constructs new Board for MOVING purposes (recalculates Winning) */
-	private GameBoard(Player view, Tile[][] board, Player moving){
+	private GameBoard(Player view, Tile[][] board, Player moving, int turn){
 		this.view = view;
 		this.board = board;
 		this.activePlayer = moving;
 		this.winner = checkWin();
+		this.turn = turn+1;
 	}
 	
 	
@@ -88,6 +92,36 @@ public class GameBoard{
 		}
 	}
 	
+	/** Returns the index of the row in which the borderline of the given Player is in relation to the view (-1 for NONE Player) */
+	public int getBorderline(Player player){
+		if(!player.isLegalPlayer()){
+			return -1;
+		}
+		else{
+			if(this.view.isSame(player)){
+				return BOARD_SIZE.getY()-1;
+			}
+			else{
+				return 0;
+			}
+		}
+	}
+	
+	/** Returns the general Direction of where the given player has to move to win the game relative to the view (null for NONE Player) */
+	public Direction getMovingDirection(Player player){
+		if(!player.isLegalPlayer()){
+			return null;
+		}
+		else{
+			if(this.view.isSame(player)){
+				return Direction.UP;
+			}
+			else{
+				return Direction.DOWN;
+			}
+		}
+	}
+	
 	/** Constructs new Move using the given parameters */
 	public Move createMove(Player player, Point unit, Direction moveDir){
 		return new Move(player, unit, moveDir, this);
@@ -129,7 +163,7 @@ public class GameBoard{
 			}
 			Tile empty = new Tile();
 			newBoard[move.getUnit(this).getY()][move.getUnit(this).getX()] = empty;
-			for(int c=1; c<move.getRange(this)-1; c++){
+			for(int c=1; c<move.getRange(this); c++){
 				Point jumpPoint = move.getUnit(this).add(move.getMoveDir(this).getDir().scale(c));
 				Tile jumpTile = newBoard[jumpPoint.getY()][jumpPoint.getX()];
 				if(jumpTile.getPlayer().isOpponent(move.getPlayer())){
@@ -137,7 +171,7 @@ public class GameBoard{
 				}
 			}
 			newBoard[move.getTarget(this).getY()][move.getTarget(this).getX()] = move.getUnitTile(this);
-			GameBoard newGameBoard = new GameBoard(prevView, newBoard, this.activePlayer.getOpponent());
+			GameBoard newGameBoard = new GameBoard(prevView, newBoard, this.activePlayer.getOpponent(), this.turn);
 			this.view = prevView;
 			return newGameBoard;
 		}
@@ -217,7 +251,7 @@ public class GameBoard{
 				newBoard[cy][cx] = board[cy][cx];
 			}
 		}
-		return new GameBoard(view, newBoard, activePlayer, winner);
+		return new GameBoard(view, newBoard, activePlayer, turn, winner);
 	}
 	
 	/** Returns the Hash value of this map */
@@ -229,7 +263,7 @@ public class GameBoard{
 	/** Returns String representing this Game Board */
 	public String toString(){
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("{View: ").append(view).append(", Active Player: ").append(activePlayer).append("}\n");
+		buffer.append("{View: ").append(view).append(", Active Player: ").append(activePlayer).append(", Turn: ").append(turn).append("}\n");
 		for(int cy=0; cy<board.length; cy++){
 			for(int cx=0; cx<board[0].length; cx++){
 				buffer.append(getTile(new Point(cx, cy)));
@@ -405,7 +439,7 @@ public class GameBoard{
 	
 	//--statics--
 	/** The Dimensions of the Board */
-	private static final Point BOARD_SIZE= new Point(6, 9);
+	public static final Point BOARD_SIZE= new Point(6, 9);
 	
 	/** Representation of any Tile which is out of bounds */
 	private static final Tile OUT_OF_BOUNDS = new Tile(false);
