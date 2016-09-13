@@ -39,6 +39,11 @@ public class Point{
 		return this.multiply(new Point(factor, factor));
 	}
 	
+	/** Returns whether this Point is equal to the given Point */
+	public boolean equals(Point point){
+		return x==point.getX() && y==point.getY();
+	}
+	
 	/** Returns an int array of the form [x, y] */
 	public int[] toArray(){
 		return new int[]{x, y};

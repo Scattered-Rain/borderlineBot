@@ -16,8 +16,9 @@ public class Launcher {
 	/** Main */
 	public static void main(String[] args){
 		Bot bot = new RandomBot();
-		Game debug = new Game(bot, bot);
-		new GUI(debug);
+		GUI gui = new GUI(null);
+		Game debug = new Game(gui, bot);
+		gui.setNewGame(debug);
 		while(!debug.gameOver()){
 			debug.nextTurn();
 			try{

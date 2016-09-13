@@ -9,10 +9,10 @@ import borderlineBot.game.Player;
 import borderlineBot.util.RNG;
 
 /** Randomly Moving Bot */
-public class RandomBot extends Bot{
+public class RandomBot implements Bot{
 	
 	/** AI processing */
-	@Override public Move move(GameBoard board, Player player){
+	public Move move(GameBoard board, Player player){
 		List<Move> moves = board.generateAllLegalMoves();
 		return moves.get(RNG.nextInt(moves.size()));
 	}

@@ -5,19 +5,25 @@ import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import lombok.Getter;
+import borderlineBot.bot.Bot;
 import borderlineBot.game.Game;
 import borderlineBot.game.GameBoard;
+import borderlineBot.game.GameBoard.Move;
 import borderlineBot.game.GameBoard.Tile;
 import borderlineBot.game.Player;
 import borderlineBot.gui.img.ImageUtility;
+import borderlineBot.util.Direction;
 import borderlineBot.util.Point;
 
 /** GUI for playing/showing the game */
-public class GUI extends JPanel implements Runnable{
+public class GUI extends JPanel implements Runnable, Bot{
 	
 	/** The Title of the Window */
 	public static final String TITLE = "Borderline";
@@ -28,10 +34,19 @@ public class GUI extends JPanel implements Runnable{
 	/** The game this GUI represents */
 	private Game game;
 	
+	
+	/** If the human player can move, NONE Player if human can't move */
+	private Player humanToMove;
+	/** The Selected unit by a human */
+	private Point humanUnitSelected;
+	/** The Move Action (null if not available) */
+	private Move humanFinalMoveAction;
+	
+	
 	/** The width of a tile in pixels */
-	private float tileWidth;
+	@Getter private float tileWidth;
 	/** The height of a tile in pixels */
-	private float tileHeight;
+	@Getter private float tileHeight;
 	
 	/** The Thread that this Panel gets redrawn by */
 	private Thread thread;
@@ -46,6 +61,9 @@ public class GUI extends JPanel implements Runnable{
 	
 	/** Constructs new GUI */
 	public GUI(Game game){
+		this.humanToMove = Player.NONE;
+		this.humanFinalMoveAction = null;
+		this.humanUnitSelected = null;
 		this.game = game;
 		this.frameSize = new Point(TILE_IN_PIXELS*GameBoard.BOARD_SIZE.getX(), TILE_IN_PIXELS*GameBoard.BOARD_SIZE.getY());
 		initImages();
@@ -53,6 +71,7 @@ public class GUI extends JPanel implements Runnable{
 		setFocusable(true);
 		setBackground(Color.BLACK);
 		setDoubleBuffered(true);
+		addMouseListener(new Mouse(this));
 		frame.add(this);
 		frame.setVisible(true);
 		this.thread = new Thread(this);
@@ -132,7 +151,37 @@ public class GUI extends JPanel implements Runnable{
 	
 	/** Changes the Game that is shown */
 	public void setNewGame(Game game){
+		this.humanToMove = Player.NONE;
+		this.humanFinalMoveAction = null;
+		this.humanUnitSelected = null;
 		this.game = game;
+	}
+	
+	/** Computes press on Tile x|y */
+	public void press(int x, int y, boolean left){
+		//TODO: Something misfunctions here when View is not set to Local
+		System.out.println(new Point(x, y));
+		if(left){
+			Tile selected = game.getCurrentState().getTile(new Point(x, y));
+			System.out.println(selected);
+			if(humanUnitSelected==null){
+				if(!selected.isEmpty() && selected.getPlayer().isSame(this.humanToMove)){
+					this.humanUnitSelected = new Point(x, y);
+				}
+			}
+			else{
+				for(Move potMove : game.getCurrentState().generateAllLegalMoves()){
+					if(potMove.getUnit(game.getCurrentState()).equals(this.humanUnitSelected) && potMove.getTarget(game.getCurrentState()).equals(new Point(x, y))){
+						this.humanFinalMoveAction = potMove;
+						return;
+					}
+				}
+				this.humanUnitSelected = null;
+			}
+		}
+		else{
+			this.humanUnitSelected = null;
+		}
 	}
 	
 	/** Repaints Panel */
@@ -143,6 +192,56 @@ public class GUI extends JPanel implements Runnable{
 				Thread.sleep(15);
 			}catch(Exception ex){}
 		}
+	}
+	
+	/** Interface for Human Player (The request has to be for the Game that is currently presented) */
+	public Move move(GameBoard board, Player player) {
+		this.humanFinalMoveAction = null;
+		this.humanUnitSelected = null;
+		this.humanToMove = player;
+		while(this.humanFinalMoveAction==null){
+			try{
+				Thread.sleep(15);
+			}catch(Exception ex){}
+		}
+		Move selectedMove = humanFinalMoveAction;
+		this.humanToMove = Player.NONE;
+		this.humanFinalMoveAction = null;
+		this.humanUnitSelected = null;
+		return selectedMove;
+	}
+	
+	
+	//--classes--
+	/** Mouse Adapter Which is used to recognize inputs */
+	public static class Mouse extends MouseAdapter{
+		
+		/** Reference to the Board Panel */
+		private GUI gui;
+		
+		/** Construct new Mouse */
+		public Mouse(GUI gui){
+			this.gui = gui;
+		}
+		
+		/** Mouse has been pressed */
+		@Override public void mousePressed(MouseEvent e){
+			int button = e.getButton();
+			if(button == MouseEvent.BUTTON1){
+				int x = (int)(e.getX()/gui.getTileWidth());
+				int y = (int)(e.getY()/gui.getTileHeight());
+				gui.press(x, y, true);
+			}
+			if(button == MouseEvent.BUTTON2){
+				int x = (int)(e.getX()/gui.getTileWidth());
+				int y = (int)(e.getY()/gui.getTileHeight());
+				gui.press(x, y, false);
+			}
+		}
+		
+		/** Mouse has been released */
+		@Override public void mouseReleased(MouseEvent e){}
+		
 	}
 	
 }
