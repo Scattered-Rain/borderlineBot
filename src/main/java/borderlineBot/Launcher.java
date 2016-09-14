@@ -1,7 +1,9 @@
 package borderlineBot;
 
 import borderlineBot.bot.Bot;
+import borderlineBot.bot.bots.EvaluateOnePlyBot;
 import borderlineBot.bot.bots.RandomBot;
+import borderlineBot.bot.evals.HeuristicEval;
 import borderlineBot.game.Game;
 import borderlineBot.game.GameBoard;
 import borderlineBot.game.GameBoard.Move;
@@ -15,7 +17,7 @@ public class Launcher {
 	
 	/** Main */
 	public static void main(String[] args){
-		Bot bot = new RandomBot();
+		Bot bot = new EvaluateOnePlyBot(new HeuristicEval());//new RandomBot();
 		GUI gui = new GUI(null);
 		Game debug = new Game(bot, bot);
 		//debug.flipView();
