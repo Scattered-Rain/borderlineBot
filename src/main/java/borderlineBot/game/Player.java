@@ -50,4 +50,11 @@ public enum Player{
 		}
 	}
 	
+	
+	//--statics--
+	/** Returns an indexed Player List */
+	public static Player[] getIndexedPlayerList(){
+		return new Player[]{Player.RED, Player.BLU};
+	}
+	
 }

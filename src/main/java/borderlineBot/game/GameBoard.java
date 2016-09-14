@@ -219,6 +219,21 @@ public class GameBoard{
 		return Player.NONE;
 	}
 	
+	/** Returns the Locations (relative to the current view) where Units of the given Player are located */
+	public List<Point> getAllUnitLocs(Player player){
+		List<Point> unitLocations = new ArrayList<Point>();
+		for(int cy=0; cy<BOARD_SIZE.getY(); cy++){
+			for(int cx=0; cx<BOARD_SIZE.getX(); cx++){
+				Point point = new Point(cx, cy);
+				Tile tile = this.getTile(point);
+				if(!tile.isEmpty() && tile.getPlayer().isSame(player)){
+					unitLocations.add(point);
+				}
+			}
+		}
+		return unitLocations;
+	}
+	
 	/** Returns an exhaustive list containing all Moves that can legally be made on this Board */
 	public List<Move> generateAllLegalMoves(){
 		List<Move> allMoves = new ArrayList<Move>();

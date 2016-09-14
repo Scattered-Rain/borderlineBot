@@ -43,4 +43,11 @@ public enum Unit{
 		return this.id == unit.getId();
 	}
 	
+	
+	//--statics--
+	/** Returns an indexed Unit List */
+	public static Unit[] getIndexedUnitList(){
+		return new Unit[]{Unit.ONE, Unit.TWO};
+	}
+	
 }
