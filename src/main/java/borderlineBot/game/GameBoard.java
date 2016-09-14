@@ -243,7 +243,7 @@ public class GameBoard{
 	}
 	
 	/** Returns an exhaustive list containing all hypothetical moves of the given player */
-	public List<Move> generateAllHupotheticalLegalMoves(Player player){
+	public List<Move> generateAllHypotheticalLegalMoves(Player player){
 		List<Move> allMoves = new ArrayList<Move>();
 		for(int cy=0; cy<BOARD_SIZE.getY(); cy++){
 			for(int cx=0; cx<BOARD_SIZE.getX(); cx++){
@@ -263,6 +263,27 @@ public class GameBoard{
 			}
 		}
 		return allLegalMoves;
+	}
+	
+	/** Returns a 2d array containing the number of all players|unitTypes on the board
+	 * 	Returns 2d array in form [player][unit], where: {givenPlayer, givenPlayerOpponent}, {unitONE, unitTWO} */
+	public int[][] countUnits(Player player){
+		final Unit[] UNIT_TYPES = new Unit[]{Unit.ONE, Unit.TWO};
+		final Player[] PLAYERS = new Player[]{player, player.getOpponent()};
+		int[][] numberPieces = new int[PLAYERS.length][UNIT_TYPES.length];
+		for(int cy=0; cy<GameBoard.BOARD_SIZE.getY(); cy++){
+			for(int cx=0; cx<GameBoard.BOARD_SIZE.getX(); cx++){
+				Point p = new Point(cx, cy);
+				for(int cp=0; cp<PLAYERS.length; cp++){
+					for(int cu=0; cu<UNIT_TYPES.length; cu++){
+						if(this.getTile(p).getPlayer().isSame(PLAYERS[cp]) && this.getTile(p).getUnit().isUnit(UNIT_TYPES[cu])){
+							numberPieces[cp][cu]++;
+						}
+					}
+				}
+			}
+		}
+		return numberPieces;
 	}
 	
 	/** Returns deep Clone of this GameBoard */
