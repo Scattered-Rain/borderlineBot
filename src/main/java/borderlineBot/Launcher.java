@@ -17,10 +17,9 @@ public class Launcher {
 	
 	/** Main */
 	public static void main(String[] args){
-		Bot bot = new EvaluateOnePlyBot(new HeuristicEval());//new RandomBot();
+		Bot bot = new EvaluateOnePlyBot(new HeuristicEval());
 		GUI gui = new GUI(null);
 		Game debug = new Game(bot, bot);
-		//debug.flipView();
 		gui.setNewGame(debug);
 		while(!debug.gameOver()){
 			debug.nextTurn();

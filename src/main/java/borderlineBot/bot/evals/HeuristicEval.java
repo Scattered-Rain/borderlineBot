@@ -10,12 +10,13 @@ public class HeuristicEval implements EvaluationFunction{
 	
 	/** Evaluates */
 	public float evaluate(GameBoard board, Player player){
-		//Win or Loss check
+		//(Guaranteed) Win or Guaranteed Loss check
 		if(board.getWinner().isSame(player)){
 			return Float.POSITIVE_INFINITY;
 		}
-		else if(board.getWinner().isSame(player.getOpponent())){
-			return Float.NEGATIVE_INFINITY;
+		else{
+			
+			
 		}
 		//Main Function
 		float score = 0;
@@ -38,7 +39,12 @@ public class HeuristicEval implements EvaluationFunction{
 				}
 			}
 		}
-		score = numberPieces[0][0] + numberPieces[0][0]*1.5f - (numberPieces[1][0] + numberPieces[1][0]*1.5f);
+		final float[][] valueBias = new float[][]{{1.0f, 1.5f}, {-1.0f, -1.5f}};//[Player][Unit]
+		for(int cy=0; cy<numberPieces.length; cy++){
+			for(int cx=0; cx<numberPieces[0].length; cx++){
+				score += numberPieces[cy][cx]*valueBias[cy][cx];
+			}
+		}
 		return score;
 	}
 	
