@@ -151,7 +151,7 @@ public class GameBoard{
 	}
 	
 	/** Returns GameBoard which is equivalent to this with the given Move made, if Move illegal returns null */
-	public GameBoard move(Move move){
+	public synchronized GameBoard move(Move move){
 		if(move.checkLegal(this)){
 			Player prevView = view;
 			this.view = LOCAL_VIEW;
@@ -163,11 +163,11 @@ public class GameBoard{
 			}
 			Tile empty = new Tile();
 			newBoard[move.getUnit(this).getY()][move.getUnit(this).getX()] = empty;
-			for(int c=1; c<move.getRange(this); c++){
-				Point jumpPoint = move.getUnit(this).add(move.getMoveDir(this).getDir().scale(c));
-				Tile jumpTile = newBoard[jumpPoint.getY()][jumpPoint.getX()];
-				if(jumpTile.getPlayer().isOpponent(move.getPlayer())){
-					newBoard[jumpPoint.getY()][jumpPoint.getX()] = empty;
+			List<Tile> jTiles = move.getTargetTileList(this);
+			List<Point> jPoints = move.getTargetList(this);
+			for(int c=0; c<jTiles.size(); c++){
+				if(jTiles.get(c).getPlayer().isOpponent(move.getPlayer())){
+					newBoard[jPoints.get(c).getY()][jPoints.get(c).getX()] = empty;
 				}
 			}
 			newBoard[move.getTarget(this).getY()][move.getTarget(this).getX()] = move.getUnitTile(this);
@@ -242,6 +242,28 @@ public class GameBoard{
 		return allLegalMoves;
 	}
 	
+	/** Returns an exhaustive list containing all hypothetical moves of the given player */
+	public List<Move> generateAllHupotheticalLegalMoves(Player player){
+		List<Move> allMoves = new ArrayList<Move>();
+		for(int cy=0; cy<BOARD_SIZE.getY(); cy++){
+			for(int cx=0; cx<BOARD_SIZE.getX(); cx++){
+				Point point = new Point(cx, cy);
+				Tile tile = this.getTile(point);
+				if(!tile.isEmpty() && tile.getPlayer().isSame(player)){
+					for(int c=0; c<Direction.values().length; c++){
+						allMoves.add(this.createMove(player, point, Direction.values()[c]));
+					}
+				}
+			}
+		}
+		List<Move> allLegalMoves = new ArrayList<Move>();
+		for(int c=0; c<allMoves.size(); c++){
+			if(allMoves.get(c).checkHypotheticalLegal(this)){
+				allLegalMoves.add(allMoves.get(c));
+			}
+		}
+		return allLegalMoves;
+	}
 	
 	/** Returns deep Clone of this GameBoard */
 	public GameBoard clone(){
@@ -399,9 +421,28 @@ public class GameBoard{
 			return getUnit(board).add((getMoveDir(board).getDir().scale(getRange(board))));
 		}
 		
+		/** Returns The Points onto which the Unit should move (last Point is the target tile) */
+		public List<Point> getTargetList(GameBoard board){
+			List<Point> out = new ArrayList<Point>();
+			for(int c=1; c<=getRange(board); c++){
+				out.add(getUnit(board).add((getMoveDir(board).getDir().scale(c))));
+			}
+			return out;
+		}
+		
 		/** Returns the Tile onto which the Unit should move to */
 		public Tile getTargetTile(GameBoard board){
 			return board.getTile(getTarget(board));
+		}
+		
+		/** Returns The Tiles onto which the Unit should move (last Point is the target tile) */
+		public List<Tile> getTargetTileList(GameBoard board){
+			List<Point> jumpTiles = getTargetList(board);
+			List<Tile> out = new ArrayList<Tile>();
+			for(int c=0; c<jumpTiles.size(); c++){
+				out.add(board.getTile(jumpTiles.get(c)));
+			}
+			return out;
 		}
 		
 		/** Returns the direction the unit is supposed to move in based on the given view */
@@ -423,6 +464,19 @@ public class GameBoard{
 			if(!board.getActivePlayer().isSame(player)){
 				return false;
 			}
+			Tile unitTile = board.getTile(getUnit(board));
+			if(!unitTile.inBounds || unitTile.isEmpty || !unitTile.getPlayer().isSame(player)){
+				return false;
+			}
+			Tile target = getTargetTile(board);
+			if(!target.inBounds || target.getPlayer()==player){
+				return false;
+			}
+			return true;
+		}
+		
+		/** Returns whether this Move would be legal if both players could make a move and the end of game would allow more moves */
+		public boolean checkHypotheticalLegal(GameBoard board){
 			Tile unitTile = board.getTile(getUnit(board));
 			if(!unitTile.inBounds || unitTile.isEmpty || !unitTile.getPlayer().isSame(player)){
 				return false;
