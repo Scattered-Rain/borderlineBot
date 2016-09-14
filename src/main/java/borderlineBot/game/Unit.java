@@ -38,4 +38,9 @@ public enum Unit{
 		}
 	}
 	
+	/** Returns whether this Unit is equal to the given Unit */
+	public boolean isUnit(Unit unit){
+		return this.id == unit.getId();
+	}
+	
 }
