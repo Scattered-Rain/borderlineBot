@@ -28,7 +28,7 @@ public class GUI extends JPanel implements Runnable, Bot{
 	/** The Title of the Window */
 	public static final String TITLE = "Borderline";
 	/** The Size in Pixels every Tile gets to take, determines Window size */
-	public static final int TILE_IN_PIXELS = 32;
+	public static final int TILE_IN_PIXELS = 64;
 	
 	
 	/** The game this GUI represents */
