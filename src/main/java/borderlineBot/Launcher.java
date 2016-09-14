@@ -18,6 +18,7 @@ public class Launcher {
 		Bot bot = new RandomBot();
 		GUI gui = new GUI(null);
 		Game debug = new Game(gui, bot);
+		debug.flipView();
 		gui.setNewGame(debug);
 		while(!debug.gameOver()){
 			debug.nextTurn();

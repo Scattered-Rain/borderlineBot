@@ -119,6 +119,8 @@ public class GUI extends JPanel implements Runnable, Bot{
 	@Override public void paint(Graphics g){
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D)g;
+		//Reference to the board
+		GameBoard currentState = game.getCurrentStateClone();
 		//Draw The base tiles
 		final Image blueTile = tiles[0];
 		final Image neutralTile = tiles[1];
@@ -127,8 +129,8 @@ public class GUI extends JPanel implements Runnable, Bot{
 			Image toDraw = neutralTile;
 			if(cy==0 || cy==GameBoard.BOARD_SIZE.getY()-1){
 				toDraw = redTile;
-				if((game.getCurrentState().getView().isSame(Player.BLU) && cy==GameBoard.BOARD_SIZE.getY()-1) ||
-						(game.getCurrentState().getView().isSame(Player.RED) && cy==0)){
+				if((currentState.getView().isSame(Player.BLU) && cy==GameBoard.BOARD_SIZE.getY()-1) ||
+						(currentState.getView().isSame(Player.RED) && cy==0)){
 					toDraw = blueTile;
 				}
 			}
@@ -139,7 +141,7 @@ public class GUI extends JPanel implements Runnable, Bot{
 		//Draw Units
 		for(int cy=0; cy<GameBoard.BOARD_SIZE.getY(); cy++){
 			for(int cx=0; cx<GameBoard.BOARD_SIZE.getX(); cx++){
-				Tile tile = game.getCurrentState().getTile(new Point(cx, cy));
+				Tile tile = currentState.getTile(new Point(cx, cy));
 				if(tile.getPlayer().isLegalPlayer()){
 					int player = tile.getPlayer().getId()-1;
 					int unit = tile.getUnit().getId()-1;
@@ -159,19 +161,17 @@ public class GUI extends JPanel implements Runnable, Bot{
 	
 	/** Computes press on Tile x|y */
 	public void press(int x, int y, boolean left){
-		//TODO: Something misfunctions here when View is not set to Local
-		System.out.println(new Point(x, y));
+		GameBoard currentState = game.getCurrentStateClone();
 		if(left){
-			Tile selected = game.getCurrentState().getTile(new Point(x, y));
-			System.out.println(selected);
+			Tile selected = currentState.getTile(new Point(x, y));
 			if(humanUnitSelected==null){
 				if(!selected.isEmpty() && selected.getPlayer().isSame(this.humanToMove)){
 					this.humanUnitSelected = new Point(x, y);
 				}
 			}
 			else{
-				for(Move potMove : game.getCurrentState().generateAllLegalMoves()){
-					if(potMove.getUnit(game.getCurrentState()).equals(this.humanUnitSelected) && potMove.getTarget(game.getCurrentState()).equals(new Point(x, y))){
+				for(Move potMove : currentState.generateAllLegalMoves()){
+					if(potMove.getUnit(currentState).equals(this.humanUnitSelected) && potMove.getTarget(currentState).equals(new Point(x, y))){
 						this.humanFinalMoveAction = potMove;
 						return;
 					}

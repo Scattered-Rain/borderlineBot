@@ -386,7 +386,7 @@ public class GameBoard{
 		
 		/** Returns the Range this Move actually has */
 		public int getRange(GameBoard board){
-			return getUnitTile(board).getRange(moveDir, board);
+			return getUnitTile(board).getRange(getMoveDir(board), board);
 		}
 		
 		/** Returns the Tile of the Unit */
@@ -424,7 +424,7 @@ public class GameBoard{
 				return false;
 			}
 			Tile unitTile = board.getTile(getUnit(board));
-			if(unitTile.isEmpty || !unitTile.getPlayer().isSame(player)){
+			if(!unitTile.inBounds || unitTile.isEmpty || !unitTile.getPlayer().isSame(player)){
 				return false;
 			}
 			Tile target = getTargetTile(board);

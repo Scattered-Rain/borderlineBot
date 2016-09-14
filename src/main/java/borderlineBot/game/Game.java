@@ -32,7 +32,7 @@ public class Game {
 		Player current = getCurrentState().getActivePlayer();
 		for(int c=0; c<PLAYER_LIST.length; c++){
 			if(current.isSame(PLAYER_LIST[c])){
-				Move move = players[c].move(getCurrentState(), PLAYER_LIST[c]);
+				Move move = players[c].move(getCurrentStateClone(), PLAYER_LIST[c]);
 				GameBoard newState = getCurrentState().move(move);
 				history.add(newState);
 				this.turn++;
@@ -41,8 +41,13 @@ public class Game {
 	}
 	
 	/** Returns current state of the gmae */
-	public GameBoard getCurrentState(){
+	private GameBoard getCurrentState(){
 		return history.get(history.size()-1);
+	}
+	
+	/** Returns Clone of current state */
+	public GameBoard getCurrentStateClone(){
+		return getCurrentState().clone();
 	}
 	
 	/** Returns the index of the winning bot, -1 for no winner */
@@ -54,6 +59,16 @@ public class Game {
 			}
 		}
 		return -1;
+	}
+	
+	/** Flips View in current state */
+	public void flipView(){
+		this.getCurrentState().flipView();
+	}
+	
+	/** Flips View in current state */
+	public void setView(Player player){
+		this.getCurrentState().setView(player);
 	}
 	
 	/** Returns whether the game is over */
