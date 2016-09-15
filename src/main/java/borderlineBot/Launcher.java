@@ -1,6 +1,7 @@
 package borderlineBot;
 
 import borderlineBot.bot.Bot;
+import borderlineBot.bot.bots.BasicTreeSearchBot;
 import borderlineBot.bot.bots.EvaluateOnePlyBot;
 import borderlineBot.bot.bots.RandomBot;
 import borderlineBot.bot.evals.EvaluationFunction;
@@ -19,9 +20,15 @@ public class Launcher {
 	
 	/** Main */
 	public static void main(String[] args){
-		Bot bot = new EvaluateOnePlyBot(new HeuristicEval());
 		GUI gui = new GUI(null);
-		Game debug = new Game(bot, bot);
+		Bot[] bots = new Bot[]{
+				gui,//0
+				new RandomBot(),//1
+				new EvaluateOnePlyBot(new HeuristicEval()),//2
+				new BasicTreeSearchBot(new HeuristicEval(), 2),//3
+				new BasicTreeSearchBot(new HeuristicEval(), 3),//4
+		};
+		Game debug = new Game(bots[4], bots[3]);
 		gui.setNewGame(debug);
 		EvaluationFunction debugEval = new HeuristicEval();
 		while(!debug.gameOver()){
