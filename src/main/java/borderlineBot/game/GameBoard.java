@@ -134,20 +134,17 @@ public class GameBoard{
 	
 	/** Sets the view of this board to the given Player (Turns the board around) */
 	public GameBoard setView(Player player){
-		this.view = player;
-		return this;
+		return clone(player);
 	}
 	
 	/** Sets the view of this board to the opponent of the currently viewing player (no effect for Player NONE) */
 	public GameBoard flipView(){
-		setView(view.getOpponent());
-		return this;
+		return clone(view.getOpponent());
 	}
 	
 	/** Sets the view of this board to the active player */
-	public GameBoard setViewToActivePlayer(){
-		setView(this.activePlayer);
-		return this;
+	public GameBoard viewToActivePlayer(){
+		return clone(this.activePlayer);
 	}
 	
 	/** Returns GameBoard which is equivalent to this with the given Move made, if Move illegal returns null */
@@ -301,8 +298,8 @@ public class GameBoard{
 		return numberPieces;
 	}
 	
-	/** Returns deep Clone of this GameBoard */
-	public GameBoard clone(){
+	/** Returns deep Clone of this GameBoard with changed view*/
+	private GameBoard clone(Player view){
 		Tile[][] newBoard = new Tile[board.length][board[0].length];
 		for(int cy=0; cy<board.length; cy++){
 			for(int cx=0; cx<board[0].length; cx++){
@@ -310,6 +307,11 @@ public class GameBoard{
 			}
 		}
 		return new GameBoard(view, newBoard, activePlayer, turn, winner);
+	}
+	
+	/** Returns deep Clone of this GameBoard */
+	public GameBoard clone(){
+		return clone(view);
 	}
 	
 	/** Returns the Hash value of this map */

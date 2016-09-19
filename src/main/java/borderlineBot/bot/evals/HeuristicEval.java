@@ -16,7 +16,7 @@ public class HeuristicEval implements EvaluationFunction{
 	/** The bias the given to clear win/lose conditions (Should be magnitudes higher than can otherwise be reached) */
 	private static final float CLEAR_BIAS = 100000f;
 	/** Value Bias for the remainder of units [{playerOne, PlayerTWO}, {opponentONE, opponentTWO}] */
-	private static final float[][] UNIT_EXIST_BIAS = new float[][]{{10.0f, 10.5f}, {-10.0f, -10.5f}};
+	private static final float[][] UNIT_EXIST_BIAS = new float[][]{{10.0f, 15.0f}, {-10.0f, -15.0f}};
 	
 	/** Evaluation Function used for clear win/loss predictions */
 	private static final ClearWinLossEval clear = new ClearWinLossEval();
@@ -60,7 +60,7 @@ public class HeuristicEval implements EvaluationFunction{
 			}
 		}
 		//Add small random value
-		score += RNG.nextFloat()*0.1f;
+		score += RNG.nextFloat()*0.01f;
 		//Return Score
 		return score;
 	}

@@ -25,10 +25,10 @@ public class Launcher {
 				gui,//0
 				new RandomBot(),//1
 				new EvaluateOnePlyBot(new HeuristicEval()),//2
-				new BasicTreeSearchBot(new HeuristicEval(), 2),//3
+				new BasicTreeSearchBot(new HeuristicEval(), 3),//3
 				new BasicTreeSearchBot(new HeuristicEval(), 3),//4
 		};
-		Game debug = new Game(bots[4], bots[3]);
+		Game debug = new Game(bots[0], bots[0]);
 		gui.setNewGame(debug);
 		EvaluationFunction debugEval = new HeuristicEval();
 		while(!debug.gameOver()){
