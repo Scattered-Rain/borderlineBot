@@ -22,7 +22,7 @@ public class Game {
 	public Game(Bot bot0, Bot bot1){
 		this.turn = 0;
 		this.history = new ArrayList<GameBoard>();
-		history.add(new GameBoard().flipView());
+		history.add(new GameBoard().getflipView());
 		this.players = new Bot[]{bot0, bot1};
 	}
 	
@@ -63,17 +63,27 @@ public class Game {
 	
 	/** Flips View in current state */
 	public void flipView(){
-		this.getCurrentState().flipView();
+		setView(getCurrentState().getView().getOpponent());
 	}
 	
 	/** Flips View in current state */
 	public void setView(Player player){
-		this.getCurrentState().setView(player);
+		GameBoard temp = this.getCurrentState();
+		if(!temp.getView().isSame(player)){
+			this.history.remove(history.size()-1);
+			this.history.add(temp.getBoardWithView(player));
+		}
 	}
 	
 	/** Returns whether the game is over */
 	public boolean gameOver(){
 		return getCurrentState().getWinner().isLegalPlayer();
+	}
+	
+	
+	/** Adds the given board to be the current board, for debug purposes only! */
+	public void debugSpliceGameBoard(GameBoard splicedBoard){
+		this.history.add(splicedBoard);
 	}
 	
 	

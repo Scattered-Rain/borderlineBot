@@ -33,7 +33,7 @@ public class GameBoard{
 	}
 	
 	/** Constructs new Board for CLONING purposes */
-	private GameBoard(Player view, Tile[][] board, Player moving, int turn, Player winner){
+	public GameBoard(Player view, Tile[][] board, Player moving, int turn, Player winner){
 		this.view = view;
 		this.board = board;
 		this.activePlayer = moving;
@@ -133,17 +133,17 @@ public class GameBoard{
 	}
 	
 	/** Sets the view of this board to the given Player (Turns the board around) */
-	public GameBoard setView(Player player){
+	public GameBoard getBoardWithView(Player player){
 		return clone(player);
 	}
 	
 	/** Sets the view of this board to the opponent of the currently viewing player (no effect for Player NONE) */
-	public GameBoard flipView(){
+	public GameBoard getflipView(){
 		return clone(view.getOpponent());
 	}
 	
 	/** Sets the view of this board to the active player */
-	public GameBoard viewToActivePlayer(){
+	public GameBoard getViewToActivePlayer(){
 		return clone(this.activePlayer);
 	}
 	
@@ -314,12 +314,6 @@ public class GameBoard{
 		return clone(view);
 	}
 	
-	/** Returns the Hash value of this map */
-	public long hash(){
-		//TODO: Implement Hashing!
-		return -1;
-	}
-	
 	/** Returns String representing this Game Board */
 	public String toString(){
 		StringBuffer buffer = new StringBuffer();
@@ -381,12 +375,6 @@ public class GameBoard{
 			else{
 				return getUnit().getMirroredRange(dir, !getPlayer().isSame(board.getView()));
 			}
-		}
-		
-		/** Returns value representing this unit for the purposes of hashing */
-		public int hashValue(GameBoard board){
-			//TODO: Implement this
-			return -1;
 		}
 		
 		/** Returns String representing this Unit */
@@ -537,7 +525,7 @@ public class GameBoard{
 	private static final Tile OUT_OF_BOUNDS = new Tile(false);
 	
 	/** The Player according to whom the local view (i.e. the actual array) is oriented (The opponent occupies row 0 and 1) */
-	private static final Player LOCAL_VIEW = Player.RED;
+	public static final Player LOCAL_VIEW = Player.RED;
 	
 	
 }

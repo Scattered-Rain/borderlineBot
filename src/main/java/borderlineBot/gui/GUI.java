@@ -78,6 +78,12 @@ public class GUI extends JPanel implements Runnable, Bot{
 		thread.start();
 	}
 	
+	/** Constructs new GUI */
+	public GUI(Game game, String title){
+		this(game);
+		frame.setTitle(title);
+	}
+	
 	/** Sets up Frame */
 	private void setupFrame(){
 		//Define Frame on which this Panel draws itself
@@ -118,6 +124,11 @@ public class GUI extends JPanel implements Runnable, Bot{
 	/** Actual Painting Process */
 	@Override public void paint(Graphics g){
 		super.paint(g);
+		//Not yet set up check.
+		if(game==null){
+			return;
+		}
+		//Init Painting
 		Graphics2D g2d = (Graphics2D)g;
 		//Reference to the board
 		GameBoard currentState = game.getCurrentStateClone();

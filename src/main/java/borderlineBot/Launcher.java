@@ -1,5 +1,7 @@
 package borderlineBot;
 
+import java.util.Scanner;
+
 import borderlineBot.bot.Bot;
 import borderlineBot.bot.bots.BasicTreeSearchBot;
 import borderlineBot.bot.bots.EvaluateOnePlyBot;
@@ -14,6 +16,9 @@ import borderlineBot.gui.GUI;
 import borderlineBot.util.Direction;
 import borderlineBot.util.Point;
 import borderlineBot.util.RNG;
+import borderlineBot.util.hashing.Hash;
+import borderlineBot.util.hashing.Hasher;
+import borderlineBot.util.hashing.Hasher.Hash2Long;
 
 /** Launches the application */
 public class Launcher {
@@ -25,16 +30,15 @@ public class Launcher {
 				gui,//0
 				new RandomBot(),//1
 				new EvaluateOnePlyBot(new HeuristicEval()),//2
-				new BasicTreeSearchBot(new HeuristicEval(), 3),//3
+				new BasicTreeSearchBot(new HeuristicEval(), 2),//3
 				new BasicTreeSearchBot(new HeuristicEval(), 3),//4
 		};
-		Game debug = new Game(bots[0], bots[0]);
+		Game debug = new Game(bots[2], bots[3]);
 		gui.setNewGame(debug);
 		EvaluationFunction debugEval = new HeuristicEval();
 		while(!debug.gameOver()){
 			try{Thread.sleep(250);}catch(Exception ex){}
 			debug.nextTurn();
-			System.out.println(debugEval.evaluate(debug.getCurrentStateClone(), Player.RED));
 		}
 	}
 	

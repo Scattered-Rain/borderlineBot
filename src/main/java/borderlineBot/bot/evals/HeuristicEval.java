@@ -24,7 +24,7 @@ public class HeuristicEval implements EvaluationFunction{
 	
 	/** Evaluates */
 	public float evaluate(GameBoard board, Player player){
-		board.setView(player);
+		board.getBoardWithView(player);
 		float score = 0;
 		//Clear Check
 		score += clear.evaluate(board, player)*CLEAR_BIAS;
