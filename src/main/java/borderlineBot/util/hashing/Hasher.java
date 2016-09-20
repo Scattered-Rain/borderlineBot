@@ -1,6 +1,5 @@
 package borderlineBot.util.hashing;
 
-import java.util.BitSet;
 import java.util.Scanner;
 
 import lombok.Getter;
@@ -21,14 +20,14 @@ public class Hasher{
 	
 	
 	/** Hashes the given GameBoard */
-	public static Hash<Hash2Long> hashBoard(GameBoard board){
-		return new Hash2Long(board);
+	public static Hash hashBoard(GameBoard board){
+		return new Hash(board);
 	}
 	
 	
 	//--classes--
 	/** The Hash representation of a map based on 2 Long values*/
-	public static class Hash2Long extends Hash<Hash2Long>{
+	public static class Hash{
 		
 		/** Hash stored in 2*64 bits (with slack), first long */
 		@Getter private long primaryLong;
@@ -37,7 +36,7 @@ public class Hasher{
 		
 		
 		/** Builds Hash2Long based on the given game board */
-		public Hash2Long(GameBoard board){
+		public Hash(GameBoard board){
 			//Every tile that is without untit has 1 bit=false, any other tile has 3 bits {true, isCurrentPlayer, isUnitTypeONE}
 			final boolean alive = true;
 			//Set board to view the currently active player
@@ -82,14 +81,14 @@ public class Hasher{
 		}
 		
 		/** Manually build Hash */
-		public Hash2Long(long primaryLong, long secondaryLong){
+		public Hash(long primaryLong, long secondaryLong){
 			this.primaryLong = primaryLong;
 			this.secondaryLong = secondaryLong;
 		}
 		
 		
 		/** Returns the GameBoard this Hash is based on */
-		@Override public GameBoard rebuild(Player player) {
+		public GameBoard rebuild(Player player) {
 			Tile[][] board = new Tile[GameBoard.BOARD_SIZE.getY()][GameBoard.BOARD_SIZE.getX()];
 			Tile empty = new Tile();
 			Tile[][] units = new Tile[][]{{new Tile(player, Unit.ONE), new Tile(player, Unit.TWO)}, {new Tile(player.getOpponent(), Unit.ONE), new Tile(player.getOpponent(), Unit.TWO)}};
@@ -131,7 +130,7 @@ public class Hasher{
 		
 		
 		/** Compares this Hash to given Hash */
-		@Override public int compareTo(Hash2Long hash){
+		public int compareTo(Hash hash){
 			int out = Long.compare(hash.getPrimaryLong(), primaryLong);
 			if(out==0){
 				out = Long.compare(hash.getSecondaryLong(), secondaryLong);
@@ -150,7 +149,7 @@ public class Hasher{
 	//--debug--
 	/** Shows the Board corresponding to the given Hashmap */
 	public static void debugViewHash(long primary, long secondary){
-		Hash hash = new Hash2Long(primary, secondary);
+		Hash hash = new Hash(primary, secondary);
 		Game game = new Game(new RandomBot(), new RandomBot());
 		game.debugSpliceGameBoard(hash.rebuild(Player.RED));
 		GUI gui = new GUI(game, "Debug Hash View");
@@ -158,8 +157,8 @@ public class Hasher{
 	
 	/** Shows given Hash */
 	public static void debugViewHash(Hash hash){
-		if(hash instanceof Hash2Long){
-			Hash2Long hash2l = (Hash2Long)hash;
+		if(hash instanceof Hash){
+			Hash hash2l = (Hash)hash;
 			debugViewHash(hash2l.getPrimaryLong(), hash2l.getSecondaryLong());
 		}
 	}

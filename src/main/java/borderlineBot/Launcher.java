@@ -16,9 +16,9 @@ import borderlineBot.gui.GUI;
 import borderlineBot.util.Direction;
 import borderlineBot.util.Point;
 import borderlineBot.util.RNG;
-import borderlineBot.util.hashing.Hash;
+import borderlineBot.util.hashing.HashManager;
 import borderlineBot.util.hashing.Hasher;
-import borderlineBot.util.hashing.Hasher.Hash2Long;
+import borderlineBot.util.hashing.Hasher.Hash;
 
 /** Launches the application */
 public class Launcher {
