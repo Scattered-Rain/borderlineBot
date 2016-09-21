@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import borderlineBot.Launcher;
 import borderlineBot.util.hashing.Hasher.Hash;
 
@@ -26,22 +27,22 @@ public class HashManager{
 	
 	/** Puts the given board info into the Hash Map with the given Hash as key */
 	public static void put(Hash hash, BoardInfo boardInfo){
-		boardInfo.setHash(hash);
+		boardInfo.hash = hash;
 		if(!Launcher.COMPETITIVE){
 			if(has(hash)){
 				BoardInfo bInfo = get(hash);
 				//Check for error with hashCode value
-				if(!bInfo.getHash().equals(hash)){
+				if(!bInfo.hash.equals(hash)){
 					System.out.println("Equal HashCode for different Boards!");
 					System.exit(0);
 				}
 				//Counter for ubiquitusness of Board constallation
 				else{
-					boardInfo.setSeen(bInfo.getSeen()+1);
+					boardInfo.seen = bInfo.seen+1;
 				}
 			}
 			else{
-				boardInfo.setSeen(1);
+				boardInfo.seen = 1;
 			}
 		}
 		memory.put(hash, boardInfo);
@@ -50,7 +51,7 @@ public class HashManager{
 	
 	//--classes--
 	/** Container storing information about a GameBoard, used for storing in the HashMap */
-	@Data public static class BoardInfo{
+	public static class BoardInfo{
 		
 		/** Actual Hash Value of this Map (Auto added when put into HashManager) */
 		private Hash hash;
@@ -59,7 +60,7 @@ public class HashManager{
 		private int seen;
 		
 		/** The score of the given map */
-		private float score;
+		@Getter @Setter private float score;
 		
 	}
 	

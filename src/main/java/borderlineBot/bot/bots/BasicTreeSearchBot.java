@@ -6,6 +6,9 @@ import borderlineBot.bot.evals.EvaluationFunction;
 import borderlineBot.game.GameBoard;
 import borderlineBot.game.GameBoard.Move;
 import borderlineBot.game.Player;
+import borderlineBot.util.hashing.HashManager;
+import borderlineBot.util.hashing.Hasher;
+import borderlineBot.util.hashing.Hasher.Hash;
 
 @AllArgsConstructor
 /** Very Simple implementation of a Tree Search Algorithm */
@@ -39,7 +42,17 @@ public class BasicTreeSearchBot implements Bot{
 			boolean max = board.getActivePlayer().isSame(player);
 			float bestScore = max?-999999999:999999999;
 			for(Move move : board.generateAllLegalMoves()){
-				float temp = recTreeSearch(board.move(move), player, depth-1);
+				float temp = 0;
+				//Hash Splice
+				GameBoard nextBoard  = board.move(move);
+				Hash nextBoardHash = Hasher.hashBoard(nextBoard);
+				if(HashManager.has(nextBoardHash)){
+					temp = HashManager.get(nextBoardHash).getScore();
+				}
+				else{
+					temp = recTreeSearch(nextBoard, player, depth-1);
+				}
+				//Evaluation
 				if(max && temp>bestScore){
 					bestScore = temp;
 				}

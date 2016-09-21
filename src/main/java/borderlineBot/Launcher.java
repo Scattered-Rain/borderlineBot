@@ -23,11 +23,6 @@ import borderlineBot.util.hashing.Hasher.Hash;
 /** Launches the application */
 public class Launcher {
 	
-	
-	/** Variable deciding whether some non-necessary/util/debug operations should be pruned during execution */
-	public static final boolean COMPETITIVE = false;
-	
-	
 	/** Main */
 	public static void main(String[] args){
 		GUI gui = new GUI(null);
@@ -35,8 +30,8 @@ public class Launcher {
 				gui,//0
 				new RandomBot(),//1
 				new EvaluateOnePlyBot(new HeuristicEval()),//2
-				new BasicTreeSearchBot(new HeuristicEval(), 2),//3
-				new BasicTreeSearchBot(new HeuristicEval(), 3),//4
+				new BasicTreeSearchBot(new HeuristicEval(), 3),//3
+				new BasicTreeSearchBot(new HeuristicEval(), 4),//4
 		};
 		Game debug = new Game(bots[2], bots[3]);
 		gui.setNewGame(debug);
@@ -46,5 +41,10 @@ public class Launcher {
 			debug.nextTurn();
 		}
 	}
+	
+	
+	//--settings--
+	/** Variable deciding whether some non-necessary/util/debug operations should be omitted during execution */
+	public static final boolean COMPETITIVE = false;
 	
 }
