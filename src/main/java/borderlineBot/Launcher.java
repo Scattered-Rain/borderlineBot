@@ -23,6 +23,11 @@ import borderlineBot.util.hashing.Hasher.Hash;
 /** Launches the application */
 public class Launcher {
 	
+	
+	/** Variable deciding whether some non-necessary/util/debug operations should be pruned during execution */
+	public static final boolean COMPETITIVE = false;
+	
+	
 	/** Main */
 	public static void main(String[] args){
 		GUI gui = new GUI(null);

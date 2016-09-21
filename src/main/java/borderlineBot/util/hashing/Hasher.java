@@ -138,6 +138,14 @@ public class Hasher{
 			return out;
 		}
 		
+		/** Returns 32 bit Hash Code derived from the long representation in this Hash class */
+		public int generateHashCode(){
+			int out = 0;
+			out = new Long(primaryLong).hashCode();
+			out = new Long(secondaryLong+out).hashCode();
+			return out;
+		}
+		
 		/** Returns the String of this has */
 		public String toString(){
 			return primaryLong+" "+secondaryLong;
