@@ -128,7 +128,6 @@ public class Hasher{
 			return ((val >> position) & 1)!=0;
 		}
 		
-		
 		/** Compares this Hash to given Hash */
 		public int compareTo(Hash hash){
 			int out = Long.compare(hash.getPrimaryLong(), primaryLong);
@@ -138,8 +137,13 @@ public class Hasher{
 			return out;
 		}
 		
-		/** Returns 32 bit Hash Code derived from the long representation in this Hash class */
-		public int generateHashCode(){
+		/** Returns whether the given Hash is identical to this */
+		public boolean equals(Hash hash){
+			return compareTo(hash)==0;
+		}
+		
+		/** Returns 32 bit Hash Code derived from the long representation in this Hash class (Used for Hash Map, etc) */
+		@Override public int hashCode(){
 			int out = 0;
 			out = new Long(primaryLong).hashCode();
 			out = new Long(secondaryLong+out).hashCode();
