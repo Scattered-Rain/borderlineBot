@@ -23,23 +23,31 @@ import borderlineBot.util.hashing.Hasher.Hash;
 /** Launches the application */
 public class Launcher {
 	
-	/** Main */
+	/** Initialize all important Systems an call Launch */
 	public static void main(String[] args){
+		HashManager.initHashManager(0);
+		launch();
+	}
+	
+	/** Launch for actual Program */
+	private static  void launch(){
 		GUI gui = new GUI(null);
 		Bot[] bots = new Bot[]{
 				gui,//0
 				new RandomBot(),//1
 				new EvaluateOnePlyBot(new HeuristicEval()),//2
-				new BasicTreeSearchBot(new HeuristicEval(), 3),//3
-				new BasicTreeSearchBot(new HeuristicEval(), 4),//4
+				new BasicTreeSearchBot(new HeuristicEval(), 2),//3
+				new BasicTreeSearchBot(new HeuristicEval(), 2),//4
 		};
-		Game debug = new Game(bots[2], bots[3]);
+		Game debug = new Game(bots[3], bots[3]);
+		debug.flipView();
 		gui.setNewGame(debug);
 		EvaluationFunction debugEval = new HeuristicEval();
 		while(!debug.gameOver()){
 			try{Thread.sleep(250);}catch(Exception ex){}
 			debug.nextTurn();
 		}
+		HashManager.writeTableManager(HashManager.TABLE_HASH_FILES[0]);
 	}
 	
 	

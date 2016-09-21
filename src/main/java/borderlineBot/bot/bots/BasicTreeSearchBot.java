@@ -8,6 +8,7 @@ import borderlineBot.game.GameBoard.Move;
 import borderlineBot.game.Player;
 import borderlineBot.util.hashing.HashManager;
 import borderlineBot.util.hashing.Hasher;
+import borderlineBot.util.hashing.HashManager.BoardInfo;
 import borderlineBot.util.hashing.Hasher.Hash;
 
 @AllArgsConstructor
@@ -22,9 +23,13 @@ public class BasicTreeSearchBot implements Bot{
 	/** AI Processing */
 	public Move move(GameBoard board, Player player) {
 		Move bestMove = null;
-		float bestScore = -999999999;
+		float bestScore = -REALLY_BIG;
 		for(Move move : board.generateAllLegalMoves()){
-			float temp = recTreeSearch(board.move(move), player, depth);
+			GameBoard movedBoard = board.move(move);
+			float temp = recTreeSearch(movedBoard, player, depth);
+			BoardInfo boardInfo = new BoardInfo();
+			boardInfo.setScore(temp);
+			HashManager.sPut(Hasher.hashBoard(movedBoard), boardInfo);
 			if(temp>bestScore){
 				bestScore = temp;
 				bestMove = move;
@@ -40,28 +45,31 @@ public class BasicTreeSearchBot implements Bot{
 		}
 		else{
 			boolean max = board.getActivePlayer().isSame(player);
-			float bestScore = max?-999999999:999999999;
+			float bestScore = max?-REALLY_BIG:REALLY_BIG;
 			for(Move move : board.generateAllLegalMoves()){
 				float temp = 0;
 				//Hash Splice
 				GameBoard nextBoard  = board.move(move);
 				Hash nextBoardHash = Hasher.hashBoard(nextBoard);
-				if(HashManager.has(nextBoardHash)){
-					temp = HashManager.get(nextBoardHash).getScore();
+				if(HashManager.sHas(nextBoardHash)){
+					temp = HashManager.sGet(nextBoardHash).getScore();
 				}
 				else{
 					temp = recTreeSearch(nextBoard, player, depth-1);
+					temp = max?temp:-temp;
 				}
 				//Evaluation
-				if(max && temp>bestScore){
-					bestScore = temp;
-				}
-				else if(!max && temp<bestScore){
+				if((max && temp>bestScore) || (!max && temp<bestScore)){
 					bestScore = temp;
 				}
 			}
 			return bestScore;
 		}
 	}
+	
+	
+	//--statics--
+	/** Absolute number used to represent really big values */
+	private static final float REALLY_BIG = 999999999;
 	
 }

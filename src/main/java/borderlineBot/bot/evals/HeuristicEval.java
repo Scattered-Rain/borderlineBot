@@ -45,7 +45,7 @@ public class HeuristicEval implements EvaluationFunction{
 				}
 			}
 		}
-		//Rewards for blocked opponent movement
+		//Rewards for blocking opponent movement
 		List<Move> playMoves = board.generateAllHypotheticalLegalMoves(player);
 		List<Move> oppMoves = board.generateAllHypotheticalLegalMoves(player.getOpponent());
 		for(Move oppMove : oppMoves){

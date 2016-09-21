@@ -1,6 +1,4 @@
 package borderlineBot.util;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /** This Object represents an (immutable) Point of two Integer Values */

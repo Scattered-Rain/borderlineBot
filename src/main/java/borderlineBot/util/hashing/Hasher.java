@@ -142,6 +142,15 @@ public class Hasher{
 			return compareTo(hash)==0;
 		}
 		
+		/** Returns whether the given Object is a Hash which is identical to this Hash */
+		@Override public boolean equals(Object hashy){
+			if(hashy instanceof Hash){
+				Hash hash = (Hash)hashy;
+				return compareTo(hash)==0;
+			}
+			return false;
+		}
+		
 		/** Returns 32 bit Hash Code derived from the long representation in this Hash class (Used for Hash Map, etc) */
 		@Override public int hashCode(){
 			int out = 0;
