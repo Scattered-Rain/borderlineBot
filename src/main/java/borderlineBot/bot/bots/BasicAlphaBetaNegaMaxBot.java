@@ -19,6 +19,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	/** Depth to search */
 	private int depth;
 	
+	
 	/** Constructs new Bot */
 	public BasicAlphaBetaNegaMaxBot(MoveOrderer orderer, EvaluationFunction eval, int depth){
 		this.orderer = orderer;
@@ -32,7 +33,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		float best = Float.NEGATIVE_INFINITY;
 		Move bestMove = null;
 		for(Move move : orderer.orderMoves(board, board.getActivePlayer())){
-			float score = alphaBeta(board.move(move), 2, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
+			float score = alphaBeta(board.move(move), depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
 			if(score>best){
 				best = score;
 				bestMove = move;
@@ -45,7 +46,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	/** Does Alpha Beta Nega Max */
 	private float alphaBeta(GameBoard board, int depth, float alpha, float beta){
 		if(depth==0 || board.getWinner().isLegalPlayer()){
-			Player player = board.getActivePlayer();
+			Player player = board.getActivePlayer().getOpponent();
 			if(board.getWinner().isLegalPlayer()){
 				return board.getWinner().isSame(player)?10000:-10000;
 			}
@@ -55,7 +56,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		}
 		float score = Float.NEGATIVE_INFINITY;
 		for(Move move : orderer.orderMoves(board, board.getActivePlayer())){
-			float value = alphaBeta(board.move(move), depth-1, -beta, -alpha);
+			float value = -alphaBeta(board.move(move), depth-1, -beta, -alpha);
 			if(value>score){
 				score = value;
 			}

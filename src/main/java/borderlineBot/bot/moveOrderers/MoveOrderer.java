@@ -20,7 +20,8 @@ public interface MoveOrderer{
 		
 		/** Returns List of Moves as GameBoard would */
 		public List<Move> orderMoves(GameBoard board, Player player) {
-			return board.generateAllHypotheticalLegalMoves(player);
+			List<Move> moves = board.generateAllHypotheticalLegalMoves(player);
+			return moves;
 		}
 		
 	}
