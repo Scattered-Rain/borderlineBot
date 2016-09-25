@@ -14,6 +14,7 @@ import borderlineBot.util.RNG;
 @AllArgsConstructor
 /** Heuristic Bot that uses one ply depth to evaluate the best move */
 public class EvaluateOnePlyBot implements Bot{
+	//NOTE: May be broken now :/
 	
 	/** The Evaluation Function this Bot uses */
 	private EvaluationFunction eval;

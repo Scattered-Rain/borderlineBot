@@ -501,8 +501,11 @@ public class GameBoard{
 			return true;
 		}
 		
-		/** Returns whether this Move would be legal if both players could make a move and the end of game would allow more moves */
+		/** Returns whether this Move would be legal if both players could make a move */
 		public boolean checkHypotheticalLegal(GameBoard board){
+			if(board.getWinner().isLegalPlayer()){
+				return false;
+			}
 			Tile unitTile = board.getTile(getUnit(board));
 			if(!unitTile.inBounds || unitTile.isEmpty || !unitTile.getPlayer().isSame(player)){
 				return false;

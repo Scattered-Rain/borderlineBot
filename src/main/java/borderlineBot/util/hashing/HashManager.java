@@ -106,7 +106,7 @@ public class HashManager{
 	public static final String[] TABLE_HASH_FILES = new String[]{"basic"};
 	
 	/** Static reference to the managers */
-	private static HashManager manager;
+	private static HashManager manager = new HashManager();
 	
 	
 	/** Initializes Static HashManager */
@@ -152,7 +152,6 @@ public class HashManager{
 			writer.close();
 			System.out.println("Writing TableHash Successful");
 		}catch(Exception ex){
-			System.out.println(ex);
 			System.out.println("Couldn't write TableHash!");
 			if(!Launcher.COMPETITIVE){
 				System.exit(0);
