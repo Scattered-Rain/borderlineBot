@@ -22,7 +22,7 @@ public class Game {
 	public Game(Bot bot0, Bot bot1){
 		this.turn = 0;
 		this.history = new ArrayList<GameBoard>();
-		history.add(new GameBoard().getflipView());
+		history.add(new GameBoard());
 		this.players = new Bot[]{bot0, bot1};
 	}
 	

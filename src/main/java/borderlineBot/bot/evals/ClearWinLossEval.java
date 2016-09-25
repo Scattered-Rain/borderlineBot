@@ -11,6 +11,16 @@ import borderlineBot.util.Point;
 /** Evaluation which only returns a score for a won/lost or a clear future win/lose board */
 public class ClearWinLossEval implements EvaluationFunction{
 	
+	//--statics--
+	/** Instance of ClearWin/Loss eval for simple static access */
+	public static ClearWinLossEval clearEval = new ClearWinLossEval();
+	
+	/** Static access: Returns 1 for win, 0.1 for guaranteed to win, -1 for lose or guaranteed to lose, 0 for no prediction */
+	public static float staticEvaluate(GameBoard board, Player player){
+		return clearEval.evaluate(board, player);
+	}
+	
+	//--finals//
 	/** Constant to be applied to all punishments */
 	public static final float NEGATIVE = -1;
 	/** The absolute value returned for a clear win/loss */
@@ -21,6 +31,7 @@ public class ClearWinLossEval implements EvaluationFunction{
 	public static final float GUARANTEED_RESULT = 0.5f;
 	
 	
+	//--methods--
 	/** Returns 1 for win, 0.1 for guaranteed to win, -1 for lose or guaranteed to lose, 0 for no prediction */
 	public float evaluate(GameBoard board, Player player){
 		//Check Direct Win

@@ -27,7 +27,7 @@ public class HeuristicEval implements EvaluationFunction{
 		board.getBoardWithView(player);
 		float score = 0;
 		//Clear Check
-		score += clear.evaluate(board, player)*CLEAR_BIAS;
+		//score += clear.evaluate(board, player)*CLEAR_BIAS;
 		//Eval start:
 		//Counts Units of both players on the board
 		int numberPieces[][] = board.countUnits(player);

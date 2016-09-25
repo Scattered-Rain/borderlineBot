@@ -3,11 +3,13 @@ package borderlineBot;
 import java.util.Scanner;
 
 import borderlineBot.bot.Bot;
+import borderlineBot.bot.bots.BasicAlphaBetaNegaMaxBot;
 import borderlineBot.bot.bots.BasicTreeSearchBot;
 import borderlineBot.bot.bots.EvaluateOnePlyBot;
 import borderlineBot.bot.bots.RandomBot;
 import borderlineBot.bot.evals.EvaluationFunction;
 import borderlineBot.bot.evals.HeuristicEval;
+import borderlineBot.bot.moveOrderers.MoveOrderer;
 import borderlineBot.game.Game;
 import borderlineBot.game.GameBoard;
 import borderlineBot.game.Player;
@@ -38,11 +40,10 @@ public class Launcher {
 				new EvaluateOnePlyBot(new HeuristicEval()),//2
 				new BasicTreeSearchBot(new HeuristicEval(), 2),//3
 				new BasicTreeSearchBot(new HeuristicEval(), 2),//4
+				new BasicAlphaBetaNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), new HeuristicEval(), 10000),//5
 		};
-		Game debug = new Game(bots[3], bots[3]);
-		debug.flipView();
+		Game debug = new Game(bots[5], bots[5]);
 		gui.setNewGame(debug);
-		EvaluationFunction debugEval = new HeuristicEval();
 		while(!debug.gameOver()){
 			try{Thread.sleep(250);}catch(Exception ex){}
 			debug.nextTurn();
