@@ -42,11 +42,11 @@ public class Launcher {
 				new BasicTreeSearchBot(new HeuristicEval(), 2),//4
 				new BasicAlphaBetaNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), new HeuristicEval(), 4),//5
 		};
-		Game debug = new Game(bots[5], bots[5]);
-		gui.setNewGame(debug);
-		while(!debug.gameOver()){
+		Game game = new Game(bots[5], bots[5]);
+		gui.setNewGame(game);
+		while(!game.gameOver()){
 			try{Thread.sleep(250);}catch(Exception ex){}
-			debug.nextTurn();
+			game.nextTurn();
 		}
 		HashManager.writeTableManager(HashManager.TABLE_HASH_FILES[0]);
 	}
