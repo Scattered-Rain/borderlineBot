@@ -55,6 +55,11 @@ public class TranspositionTable {
 		/** The amount of times this node has been visited during the search */
 		@Getter private int visited;
 		
+		/** Returns whether the depth of this Transposition node is deeper than the given depth */
+		public boolean isDeeper(int depth){
+			return depth>depth;
+		}
+		
 	}
 	
 }
