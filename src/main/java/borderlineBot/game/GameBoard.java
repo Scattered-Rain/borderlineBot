@@ -5,6 +5,8 @@ import java.util.List;
 
 import borderlineBot.util.Direction;
 import borderlineBot.util.Point;
+import borderlineBot.util.hashing.Hasher;
+import borderlineBot.util.hashing.Hasher.Hash;
 import lombok.Getter;
 
 /** Object which contains all information about the current game state */
@@ -312,6 +314,11 @@ public class GameBoard{
 	/** Returns deep Clone of this GameBoard */
 	public GameBoard clone(){
 		return clone(view);
+	}
+	
+	/** Returns Hash of this Board */
+	public Hash hash(){
+		return Hasher.hashBoard(this);
 	}
 	
 	/** Returns String representing this Game Board */

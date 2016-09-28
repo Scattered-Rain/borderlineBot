@@ -39,7 +39,7 @@ public class HeuristicEval implements EvaluationFunction{
 		for(int c=0; c<2; c++){
 			for(int c2=0; c2<units[c].size(); c2++){
 				if(calcThreats(units[c].get(c2), board).size()>=1){
-					score -= UNIT_EXIST_BIAS[c][board.getTile(units[c].get(c2)).getUnit().isUnit(Unit.ONE)?0:1]/2;
+					score -= UNIT_EXIST_BIAS[c][board.getTile(units[c].get(c2)).getUnit().isUnit(Unit.ONE)?0:1]*0.1f;
 				}
 			}
 		}
@@ -51,14 +51,27 @@ public class HeuristicEval implements EvaluationFunction{
 			for(Move playMove : playMoves){
 				for(Point strikes : playMove.getTargetList(board)){
 					if(target.equals(strikes)){
-						score += (GameBoard.BOARD_SIZE.getY() - target.getY()) * 0.1f;
+						score += (GameBoard.BOARD_SIZE.getY() - target.getY()) * 0.01f;
 						break;
 					}
 				}
 			}
 		}
+		//Reward for advancig
+		int bestInverseAdvance = GameBoard.BOARD_SIZE.getY();
+		for(int c=0; c<GameBoard.BOARD_SIZE.getY(); c++){
+			for(int cx=0; cx<GameBoard.BOARD_SIZE.getX(); cx++){
+				if(board.getTile(new Point(cx, c)).getPlayer().isSame(player)){
+					if(c<bestInverseAdvance){
+						bestInverseAdvance = c;
+					}
+				}
+			}
+		}
+		int bestAdvance = GameBoard.BOARD_SIZE.getY()-bestInverseAdvance;
+		score += bestAdvance*0.001f;
 		//Add small random value
-		score += RNG.nextFloat()*0.01f;
+		score += RNG.nextFloat()*0.000001f;
 		//Return Score
 		return score;
 	}

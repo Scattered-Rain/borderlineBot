@@ -159,7 +159,7 @@ public class Hasher{
 			return out;
 		}
 		
-		/** Returns the String of this has */
+		/** Returns the String of this Hash */
 		public String toString(){
 			return primaryLong+" "+secondaryLong;
 		}
