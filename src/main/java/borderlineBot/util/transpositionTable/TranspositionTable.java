@@ -33,6 +33,11 @@ public class TranspositionTable {
 		map.put(hash, node);
 	}
 	
+	/** Replaces the node reachable with the given Hash with the given Node */
+	public void replace(Hash hash, TranspositionNode node){
+		map.replace(hash, node);
+	}
+	
 	
 	//--classes--
 	/** Node Representing a Transposition State */
