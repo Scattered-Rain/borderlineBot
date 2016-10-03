@@ -1,5 +1,7 @@
 package borderlineBot.bot.bots;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import borderlineBot.bot.moveOrderers.MoveOrderer;
 import borderlineBot.game.GameBoard;
 import borderlineBot.game.GameBoard.Move;
 import borderlineBot.game.Player;
+import borderlineBot.util.Tuple;
 import borderlineBot.util.hashing.Hasher;
 import borderlineBot.util.hashing.Hasher.Hash;
 import borderlineBot.util.transpositionTable.TranspositionTable;
@@ -37,31 +40,46 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		this.table = new TranspositionTable();
 	}
 	
-	
 	/** Bot Processing */
 	public Move move(GameBoard board, Player player){
 		this.table.reset();
-		float best = Float.NEGATIVE_INFINITY;
-		Move bestMove = null;
-		HashMap<Hash, TranspositionNode> table = new HashMap<Hash, TranspositionNode>();
 		List<Move> moves = orderer.orderMoves(board, board.getActivePlayer());
+		List<Tuple<Move, Integer>> evals = Collections.synchronizedList(new ArrayList<Tuple<Move, Integer>>());
 		for(Move move : moves){
-			float score = alphaBeta(board.move(move), depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
-			if(score>best){
-				best = score;
-				bestMove = move;
+			calcMoveMultithreaded(board, move, evals);
+		}
+		while(evals.size()!=moves.size()){
+			try{
+				Thread.sleep(1);
+			}catch(Exception ex){}
+		}
+		Tuple<Move, Integer> best = evals.get(0);
+		for(Tuple<Move, Integer> eval : evals){
+			if(eval.getB()>best.getB()){
+				best = eval;
 			}
 		}
-		return bestMove;
+		return best.getA();
+	}
+	
+	/** Calculates moves in multiple threads */
+	private void calcMoveMultithreaded(final GameBoard board, final Move move, final List<Tuple<Move, Integer>> evals){
+		Thread t = new Thread(new Runnable(){
+			public void run(){
+				int score = Integer.MIN_VALUE;
+				score = alphaBeta(board.move(move), depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
+				evals.add(new Tuple<Move, Integer>(move, score));
+			}
+		});  
+		t.start();
 	}
 	
 	/** Does Alpha Beta Nega Max */
-	private float alphaBeta(GameBoard board, int depth, float alpha, float beta){
+	private int alphaBeta(GameBoard board, int depth, float alpha, float beta){
 		Hash hash = Hasher.hashBoard(board);
 		if(table.contains(hash)){
 			TranspositionNode node = table.get(hash);
-			//System.out.println(node.getDepth()+" "+depth+" "+(this.depth-depth));
-			if(node.isDeeperOrEqual(this.depth-depth)){
+			if(node.isDeeperOrEqual(this.depth-depth) || true){
 				System.out.println("Hash Break at "+depth);
 				return node.getScore();
 			}
@@ -72,7 +90,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 				return board.getWinner().isSame(player)?10000:-10000;
 			}
 			else{
-				return eval.evaluate(board, player);
+				return (int)eval.evaluate(board, player);
 			}
 		}
 		float score = Float.NEGATIVE_INFINITY;
@@ -89,7 +107,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 			}
 		}
 		table.put(hash, new TranspositionNode(hash, (int)score, this.depth-depth));
-		return score;
+		return (int)score;
 	}
 	
 }
