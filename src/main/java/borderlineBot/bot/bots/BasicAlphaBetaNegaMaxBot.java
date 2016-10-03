@@ -82,7 +82,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 			TranspositionNode node = table.get(hash);
 			node.incrementVisited();
 			if(node.isDeeperOrEqual(this.depth-depth) || true){
-				System.out.println("Hash Break at "+depth+" - Seen: "+node.getVisited());
+				System.out.println("Hash Break at "+(this.depth-depth)+" - Seen: "+node.getVisited());
 				return node.getScore();
 			}
 		}
