@@ -25,8 +25,6 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	/** The Evaluation Function used for this Bot */
 	private EvaluationFunction eval;
 	
-	/** Counter holding the number of times this bot has been asked to calculate a move */
-	private int botIteration;
 	/** The Transposition Table used by this Bot */
 	private TranspositionTable table;
 	/** Depth to search */
@@ -39,7 +37,6 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		this.eval = eval;
 		this.depth = depth;
 		this.table = new TranspositionTable();
-		this.botIteration = 0;
 	}
 	
 	
@@ -60,7 +57,6 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 				best = eval;
 			}
 		}
-		this.botIteration+=2;
 		return best.getA();
 	}
 	
@@ -83,7 +79,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		if(table.contains(hash)){
 			TranspositionNode node = table.get(hash);
 			node.incrementVisited();
-			if(node.isDeeperOrEqual(this.depth-depth+botIteration)){
+			if(node.isDeeperOrEqual(this.depth-depth)){
 				//System.out.println("Hash Break at "+(this.depth-depth)+" - Seen: "+node.getVisited());
 				return node.getScore();
 			}
@@ -114,10 +110,10 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 			}
 		}
 		if(replaceTableNode){
-			table.replace(hash, new TranspositionNode(hash, (int)score, this.depth-depth+botIteration));
+			table.replace(hash, new TranspositionNode(hash, (int)score, this.depth-depth));
 		}
 		else{
-			table.put(hash, new TranspositionNode(hash, (int)score, this.depth-depth+botIteration));
+			table.put(hash, new TranspositionNode(hash, (int)score, this.depth-depth));
 		}
 		return score;
 	}

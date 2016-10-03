@@ -214,6 +214,8 @@ public class TrainedEvaluation implements EvaluationFunction{
 			}
 			return score;
 		}
+		
 	}
+	
 	
 }
