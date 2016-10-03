@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import borderlineBot.bot.Bot;
-import borderlineBot.bot.evals.ClearWinLossEval;
 import borderlineBot.bot.evals.EvaluationFunction;
 import borderlineBot.bot.moveOrderers.MoveOrderer;
 import borderlineBot.game.GameBoard;
@@ -85,7 +84,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 			TranspositionNode node = table.get(hash);
 			node.incrementVisited();
 			if(node.isDeeperOrEqual(this.depth-depth+botIteration)){
-				System.out.println("Hash Break at "+(this.depth-depth)+" - Seen: "+node.getVisited());
+				//System.out.println("Hash Break at "+(this.depth-depth)+" - Seen: "+node.getVisited());
 				return node.getScore();
 			}
 			else{

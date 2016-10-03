@@ -8,7 +8,7 @@ import borderlineBot.bot.bots.BasicTreeSearchBot;
 import borderlineBot.bot.bots.EvaluateOnePlyBot;
 import borderlineBot.bot.bots.RandomBot;
 import borderlineBot.bot.evals.EvaluationFunction;
-import borderlineBot.bot.evals.HeuristicEval;
+import borderlineBot.bot.evals.TrainedEvaluationTrainer;
 import borderlineBot.bot.moveOrderers.MoveOrderer;
 import borderlineBot.game.Game;
 import borderlineBot.game.GameBoard;
@@ -28,7 +28,8 @@ public class Launcher {
 	/** Initialize all important Systems an call Launch */
 	public static void main(String[] args){
 		HashManager.initHashManager(0);
-		launch();
+		//launch();
+		TrainedEvaluationTrainer.trainEvaluation();
 	}
 	
 	/** Launch for actual Program */
@@ -37,10 +38,10 @@ public class Launcher {
 		Bot[] bots = new Bot[]{
 				gui,//0
 				new RandomBot(),//1
-				new EvaluateOnePlyBot(new HeuristicEval()),//2
-				new BasicTreeSearchBot(new HeuristicEval(), 2),//3
-				new BasicTreeSearchBot(new HeuristicEval(), 2),//4
-				new BasicAlphaBetaNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), new HeuristicEval(), 8),//5
+				new EvaluateOnePlyBot(null),//2
+				new BasicTreeSearchBot(null, 2),//3
+				new BasicTreeSearchBot(null, 2),//4
+				new BasicAlphaBetaNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), null, 8),//5
 		};
 		Game game = new Game(bots[5], bots[5]);
 		gui.setNewGame(game);

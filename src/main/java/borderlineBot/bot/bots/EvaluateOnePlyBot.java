@@ -22,10 +22,10 @@ public class EvaluateOnePlyBot implements Bot{
 	/** AI processing */
 	public Move move(GameBoard board, Player player){
 		List<Move> bestMoves = new ArrayList<Move>();
-		float bestScore = Float.NEGATIVE_INFINITY;
+		int bestScore = Integer.MIN_VALUE;
 		for(Move move : board.generateAllLegalMoves()){
 			GameBoard nextBoard = board.move(move);
-			float tempScore = eval.evaluate(nextBoard, player);
+			int tempScore = eval.evaluate(nextBoard, player);
 			if(tempScore>bestScore){
 				bestMoves.clear();
 				bestScore = tempScore;

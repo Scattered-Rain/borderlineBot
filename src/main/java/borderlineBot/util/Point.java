@@ -16,6 +16,11 @@ public class Point{
 		this.y = y;
 	}
 	
+	/** Constructs new Point with X=Y */
+	public Point(int xy){
+		this(xy, xy);
+	}
+	
 	
 	/** Returns Point of the sum of this Point with given Point */
 	public Point add(Point point){
