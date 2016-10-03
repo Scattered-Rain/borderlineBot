@@ -40,7 +40,7 @@ public class Launcher {
 				new EvaluateOnePlyBot(new HeuristicEval()),//2
 				new BasicTreeSearchBot(new HeuristicEval(), 2),//3
 				new BasicTreeSearchBot(new HeuristicEval(), 2),//4
-				new BasicAlphaBetaNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), new HeuristicEval(), 7),//5
+				new BasicAlphaBetaNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), new HeuristicEval(), 8),//5
 		};
 		Game game = new Game(bots[5], bots[5]);
 		gui.setNewGame(game);

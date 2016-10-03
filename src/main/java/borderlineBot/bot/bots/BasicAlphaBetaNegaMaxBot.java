@@ -26,6 +26,8 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	/** The Evaluation Function used for this Bot */
 	private EvaluationFunction eval;
 	
+	/** Counter holding the number of times this bot has been asked to calculate a move */
+	private int botIteration;
 	/** The Transposition Table used by this Bot */
 	private TranspositionTable table;
 	/** Depth to search */
@@ -38,21 +40,20 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		this.eval = eval;
 		this.depth = depth;
 		this.table = new TranspositionTable();
+		this.botIteration = 0;
 	}
 	
 	
 	/** Bot Processing */
 	public Move move(GameBoard board, Player player){
-		this.table.reset();
-		List<Move> moves = orderer.orderMoves(board, board.getActivePlayer());
+		//this.table.reset();
 		List<Tuple<Move, Integer>> evals = Collections.synchronizedList(new ArrayList<Tuple<Move, Integer>>());
+		List<Move> moves = orderer.orderMoves(board, board.getActivePlayer());
 		for(Move move : moves){
 			calcMoveMultithreaded(board, move, evals);
 		}
 		while(evals.size()!=moves.size()){
-			try{
-				Thread.sleep(1);
-			}catch(Exception ex){}
+			try{Thread.sleep(100);}catch(Exception ex){}
 		}
 		Tuple<Move, Integer> best = evals.get(0);
 		for(Tuple<Move, Integer> eval : evals){
@@ -60,6 +61,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 				best = eval;
 			}
 		}
+		this.botIteration+=2;
 		return best.getA();
 	}
 	
@@ -68,7 +70,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		Thread t = new Thread(new Runnable(){
 			public void run(){
 				int score = Integer.MIN_VALUE;
-				score = alphaBeta(board.move(move), depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
+				score = alphaBeta(board.move(move), depth, Integer.MIN_VALUE, Integer.MAX_VALUE);
 				evals.add(new Tuple<Move, Integer>(move, score));
 			}
 		});  
@@ -76,14 +78,18 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	}
 	
 	/** Does Alpha Beta Nega Max */
-	private int alphaBeta(GameBoard board, int depth, float alpha, float beta){
+	private int alphaBeta(GameBoard board, int depth, int alpha, int beta){
+		boolean replaceTableNode = false;
 		Hash hash = Hasher.hashBoard(board);
 		if(table.contains(hash)){
 			TranspositionNode node = table.get(hash);
 			node.incrementVisited();
-			if(node.isDeeperOrEqual(this.depth-depth) || true){
+			if(node.isDeeperOrEqual(this.depth-depth+botIteration)){
 				System.out.println("Hash Break at "+(this.depth-depth)+" - Seen: "+node.getVisited());
 				return node.getScore();
+			}
+			else{
+				replaceTableNode = true;
 			}
 		}
 		if(depth==0 || board.getWinner().isLegalPlayer()){
@@ -95,9 +101,9 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 				return (int)eval.evaluate(board, player);
 			}
 		}
-		float score = Float.NEGATIVE_INFINITY;
+		int score = Integer.MIN_VALUE;
 		for(Move move : orderer.orderMoves(board, board.getActivePlayer())){
-			float value = -alphaBeta(board.move(move), depth-1, -beta, -alpha);
+			int value = -alphaBeta(board.move(move), depth-1, -beta, -alpha);
 			if(value>score){
 				score = value;
 			}
@@ -108,8 +114,13 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 				break;
 			}
 		}
-		table.put(hash, new TranspositionNode(hash, (int)score, this.depth-depth));
-		return (int)score;
+		if(replaceTableNode){
+			table.replace(hash, new TranspositionNode(hash, (int)score, this.depth-depth+botIteration));
+		}
+		else{
+			table.put(hash, new TranspositionNode(hash, (int)score, this.depth-depth+botIteration));
+		}
+		return score;
 	}
 	
 }
