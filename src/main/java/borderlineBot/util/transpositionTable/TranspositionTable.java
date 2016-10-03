@@ -74,6 +74,11 @@ public class TranspositionTable {
 			return this.depth>=depth;
 		}
 		
+		/** Increments the visited counter of this Node */
+		public void incrementVisited(){
+			this.visited++;
+		}
+		
 	}
 	
 }

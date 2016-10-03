@@ -40,6 +40,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		this.table = new TranspositionTable();
 	}
 	
+	
 	/** Bot Processing */
 	public Move move(GameBoard board, Player player){
 		this.table.reset();
@@ -79,8 +80,9 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		Hash hash = Hasher.hashBoard(board);
 		if(table.contains(hash)){
 			TranspositionNode node = table.get(hash);
+			node.incrementVisited();
 			if(node.isDeeperOrEqual(this.depth-depth) || true){
-				System.out.println("Hash Break at "+depth);
+				System.out.println("Hash Break at "+depth+" - Seen: "+node.getVisited());
 				return node.getScore();
 			}
 		}
