@@ -29,13 +29,18 @@ public class TranspositionTable {
 	}
 	
 	/** Adds given Hash to the Hash Table */
-	public void put(Hash hash, TranspositionNode node){
+	public synchronized void put(Hash hash, TranspositionNode node){
 		map.put(hash, node);
 	}
 	
 	/** Replaces the node reachable with the given Hash with the given Node */
-	public void replace(Hash hash, TranspositionNode node){
+	public synchronized void replace(Hash hash, TranspositionNode node){
 		map.replace(hash, node);
+	}
+	
+	/** Clears the table */
+	public void reset(){
+		map.clear();
 	}
 	
 	
@@ -55,9 +60,18 @@ public class TranspositionTable {
 		/** The amount of times this node has been visited during the search */
 		@Getter private int visited;
 		
+		
+		/** Constructs new Transposition Node */
+		public TranspositionNode(Hash hash, int score, int depth){
+			this.hash = hash;
+			this.score = score;
+			this.depth = depth;
+		}
+		
+		
 		/** Returns whether the depth of this Transposition node is deeper than the given depth */
-		public boolean isDeeper(int depth){
-			return depth>depth;
+		public boolean isDeeperOrEqual(int depth){
+			return this.depth>=depth;
 		}
 		
 	}

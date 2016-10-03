@@ -12,7 +12,8 @@ import borderlineBot.game.GameBoard.Move;
 import borderlineBot.game.Player;
 import borderlineBot.util.hashing.Hasher;
 import borderlineBot.util.hashing.Hasher.Hash;
-import borderlineBot.util.hashing.TranspositionNode;
+import borderlineBot.util.transpositionTable.TranspositionTable;
+import borderlineBot.util.transpositionTable.TranspositionTable.TranspositionNode;
 
 /** Bot based on an Alpha/Beta pruned Nega Max Search */
 public class BasicAlphaBetaNegaMaxBot implements Bot{
@@ -22,6 +23,8 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	/** The Evaluation Function used for this Bot */
 	private EvaluationFunction eval;
 	
+	/** The Transposition Table used by this Bot */
+	private TranspositionTable table;
 	/** Depth to search */
 	private int depth;
 	
@@ -31,17 +34,19 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		this.orderer = orderer;
 		this.eval = eval;
 		this.depth = depth;
+		this.table = new TranspositionTable();
 	}
 	
 	
 	/** Bot Processing */
 	public Move move(GameBoard board, Player player){
+		this.table.reset();
 		float best = Float.NEGATIVE_INFINITY;
 		Move bestMove = null;
 		HashMap<Hash, TranspositionNode> table = new HashMap<Hash, TranspositionNode>();
 		List<Move> moves = orderer.orderMoves(board, board.getActivePlayer());
 		for(Move move : moves){
-			float score = alphaBeta(board.move(move), depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, table);
+			float score = alphaBeta(board.move(move), depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
 			if(score>best){
 				best = score;
 				bestMove = move;
@@ -51,11 +56,12 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	}
 	
 	/** Does Alpha Beta Nega Max */
-	private float alphaBeta(GameBoard board, int depth, float alpha, float beta, HashMap<Hash, TranspositionNode> table){
+	private float alphaBeta(GameBoard board, int depth, float alpha, float beta){
 		Hash hash = Hasher.hashBoard(board);
-		if(table.containsKey(hash)){
+		if(table.contains(hash)){
 			TranspositionNode node = table.get(hash);
-			if(node.getDepth()>=depth){
+			//System.out.println(node.getDepth()+" "+depth+" "+(this.depth-depth));
+			if(node.isDeeperOrEqual(this.depth-depth)){
 				System.out.println("Hash Break at "+depth);
 				return node.getScore();
 			}
@@ -71,7 +77,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		}
 		float score = Float.NEGATIVE_INFINITY;
 		for(Move move : orderer.orderMoves(board, board.getActivePlayer())){
-			float value = -alphaBeta(board.move(move), depth-1, -beta, -alpha, table);
+			float value = -alphaBeta(board.move(move), depth-1, -beta, -alpha);
 			if(value>score){
 				score = value;
 			}
@@ -82,7 +88,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 				break;
 			}
 		}
-		table.put(hash, new TranspositionNode(score, depth));
+		table.put(hash, new TranspositionNode(hash, (int)score, this.depth-depth));
 		return score;
 	}
 	
