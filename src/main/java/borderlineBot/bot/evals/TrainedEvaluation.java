@@ -22,6 +22,16 @@ public class TrainedEvaluation implements EvaluationFunction{
 	/** The max value allowed to be allocated to a weight */
 	public static final int WEIGHT_BOUND = 100;
 	
+	/** Array containing arrays of weights determined by former training results */
+	public static final int[][] TRAINING_RESULTS = new int[][]{
+		new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, //Basic Weights
+		new int[]{78, 38, -30, 10, 42, -84, 4, -8, 14, 26, 74, 92},//Best in Gen 4
+		new int[]{32, -38, -36, -66, 92, -26, 14, -12, -90, -64, 84, 94, }, //Best in Gen 23
+		new int[]{-28, -52, -5, 90, 47, 56, -82, -48, -86, 28, 86, -20, }, //Best Gen 28
+		new int[]{1, -84, 5, -52, 90, 46, -40, 22, -75, 28, 90, 20, }, //Best Gen 62
+		new int[]{-1, -84, -44, 52, -95, -94, -40, -68, -82, 29, 46, 7, }, //Best Gen 101
+	};
+	
 	/** Array containing the Evaluations that are used by the TrainedEvaluation */
 	public SubEvaluation[] evals;
 	/** The weights of this function, read in according to index for all parts of the evaluation in order */
@@ -29,7 +39,7 @@ public class TrainedEvaluation implements EvaluationFunction{
 	
 	
 	/** Constructs new TrainedEvaluation with the given weights (Doesn't check for too few weights) */
-	public TrainedEvaluation(int[] weights){
+	public TrainedEvaluation(int ... weights){
 		this.weights = weights;
 		initEvals();
 	}
@@ -77,7 +87,7 @@ public class TrainedEvaluation implements EvaluationFunction{
 	
 	/** Generate Random Weight between -WEIGHT_BOUND and WEIGHT_BOUND */
 	public static int randWeight(){
-		return (RNG.nextInt(WEIGHT_BOUND)*2)-WEIGHT_BOUND;
+		return RNG.nextInt(WEIGHT_BOUND);
 	}
 	
 	/** Returns String of the Weigths of this Evaluation Function */
@@ -110,6 +120,7 @@ public class TrainedEvaluation implements EvaluationFunction{
 		/** Calculates the score of this SubEvaluation for the given player, given the given weights */
 		public int evaluate(GameBoard board, Player player, int ... weights){
 			final Tuple<Player, Unit>[] ref = new Tuple[]{new Tuple<Player, Unit>(player, Unit.ONE), new Tuple<Player, Unit>(player, Unit.TWO), new Tuple<Player, Unit>(player.getOpponent(), Unit.ONE), new Tuple<Player, Unit>(player.getOpponent(), Unit.TWO)};
+			final int[] sign = new int[]{1, 1, -1, -1};
 			int score = 0;
 			for(int cy=0; cy<GameBoard.BOARD_SIZE.getY(); cy++){
 				for(int cx=0; cx<GameBoard.BOARD_SIZE.getX(); cx++){
@@ -117,7 +128,7 @@ public class TrainedEvaluation implements EvaluationFunction{
 					if(!tile.isEmpty()){
 						for(int c=0; c<ref.length; c++){
 							if(tile.getPlayer().isSame(ref[c].getA()) && tile.getUnit().isUnit(ref[c].getB())){
-								score += 1 * weights[c];
+								score += 1 * weights[c]*sign[c];
 							}
 						}
 					}
@@ -136,10 +147,11 @@ public class TrainedEvaluation implements EvaluationFunction{
 		/** Calculates the score of this SubEvaluation for the given player, given the given weights */
 		public int evaluate(GameBoard board, Player player, int ... weights){
 			final Player[] ref = new Player[]{player, player.getOpponent()};
+			final int[] sign = new int[]{1, -1};
 			int score = 0;
 			for(int c=0; c<ref.length; c++){
 				List<Move> moves = board.generateAllHypotheticalLegalMoves(ref[c]);
-				score += moves.size() * weights[c];
+				score += moves.size() * weights[c]*sign[c];
 			}
 			return score;
 		}
@@ -154,6 +166,7 @@ public class TrainedEvaluation implements EvaluationFunction{
 		/** Calculates the score of this SubEvaluation for the given player, given the given weights */
 		public int evaluate(GameBoard board, Player player, int ... weights){
 			final Player[] ref = new Player[]{player, player.getOpponent()};
+			final int[] sign = new int[]{1, -1};
 			int score = 0;
 			for(int c=0; c<ref.length; c++){
 				boolean mostAdvanceLineFound = false;
@@ -163,7 +176,7 @@ public class TrainedEvaluation implements EvaluationFunction{
 					for(int cx=0; cx<GameBoard.BOARD_SIZE.getX(); cx++){
 						Tile tile = board.getTile(new Point(cx, yLoc));
 						if(!tile.isEmpty() && tile.getPlayer().isSame(ref[c])){
-							score += y * weights[c];
+							score += y * weights[c]*sign[c];
 							mostAdvanceLineFound = true;
 							break;
 						}
@@ -184,6 +197,7 @@ public class TrainedEvaluation implements EvaluationFunction{
 		public int evaluate(GameBoard board, Player player, int ... weights){
 			final Player[] players = new Player[]{player, player.getOpponent()};
 			final Tuple<Player, Unit>[] ref = new Tuple[]{new Tuple<Player, Unit>(player, Unit.ONE), new Tuple<Player, Unit>(player, Unit.TWO), new Tuple<Player, Unit>(player.getOpponent(), Unit.ONE), new Tuple<Player, Unit>(player.getOpponent(), Unit.TWO)};
+			final int[] sign = new int[]{-1, -1, 1, 1};
 			int score = 0;
 			for(int c=0; c<players.length; c++){
 				List<Point> attackableTiles = new ArrayList<Point>();
@@ -202,7 +216,7 @@ public class TrainedEvaluation implements EvaluationFunction{
 								if(point.equals(loc)){
 									for(int w=0; w<ref.length; w++){
 										if(tile.getPlayer().isSame(ref[w].getA()) && tile.getUnit().isUnit(ref[w].getB())){
-											score += 1 * weights[w];
+											score += 1 * weights[w]*sign[w];
 										}
 									}
 									break;

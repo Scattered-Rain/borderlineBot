@@ -42,7 +42,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	
 	/** Bot Processing */
 	public Move move(GameBoard board, Player player){
-		//this.table.reset();
+		this.table.reset();
 		List<Tuple<Move, Integer>> evals = Collections.synchronizedList(new ArrayList<Tuple<Move, Integer>>());
 		List<Move> moves = orderer.orderMoves(board, board.getActivePlayer());
 		for(Move move : moves){
@@ -65,10 +65,10 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		Thread t = new Thread(new Runnable(){
 			public void run(){
 				int score = Integer.MIN_VALUE;
-				score = alphaBeta(board.move(move), depth, Integer.MIN_VALUE, Integer.MAX_VALUE);
+				score = -alphaBeta(board.move(move), depth, Integer.MIN_VALUE, Integer.MAX_VALUE);
 				evals.add(new Tuple<Move, Integer>(move, score));
 			}
-		});  
+		});
 		t.start();
 	}
 	
@@ -93,7 +93,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 				return board.getWinner().isSame(player)?10000:-10000;
 			}
 			else{
-				return (int)eval.evaluate(board, player);
+				return eval.evaluate(board, player);
 			}
 		}
 		int score = Integer.MIN_VALUE;

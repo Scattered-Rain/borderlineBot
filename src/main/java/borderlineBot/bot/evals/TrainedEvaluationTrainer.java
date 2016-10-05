@@ -16,13 +16,13 @@ public class TrainedEvaluationTrainer{
 	private static final int POPULATION = 25;
 	
 	/** The fraction of the population which represents the Elite */
-	private static final float ELITE = 0.6f;
+	private static final float ELITE = 0.4f;
 	
 	/** Number of ply after which game is declared a draw */
 	private static final int DRAW = 100;
 	
 	/** Mutation Rate for crossover */
-	private static final float MUTATION_RATE = 0.2f;
+	private static final float MUTATION_RATE = 0.05f;
 	
 	
 	/** Initializes Training procedure for TrainedEval */
@@ -32,6 +32,7 @@ public class TrainedEvaluationTrainer{
 		for(int c=0; c<pop.length; c++){
 			pop[c] = new TrainedEvaluation();
 		}
+		//pop[0] = new TrainedEvaluation(TrainedEvaluation.TRAINING_RESULTS[0]);
 		//Execute training
 		int generation = 0;
 		final int[] threadCounter = new int[]{0, 0};
@@ -69,7 +70,7 @@ public class TrainedEvaluationTrainer{
 				}
 			}
 			//Wait till all matches have ended
-			while(threadCounter[0]<threadCounter[1]){
+			while(threadCounter[0]<threadCounter[1]-3){
 				try{Thread.sleep(10);}catch(Exception ex){}
 			}
 			//sort the population
@@ -87,7 +88,7 @@ public class TrainedEvaluationTrainer{
 			}
 			//Replace inferior part of the population
 			for(int c=(int)(pop.length*ELITE); c<pop.length; c++){
-				pop[c] = crossover(pop[RNG.nextInt((int)(pop.length*ELITE))], pop[RNG.nextInt((int)(pop.length*ELITE))]);
+				pop[c] = crossover(pop[RNG.nextInt((int)(pop.length*ELITE))], pop[RNG.nextInt((int)(pop.length*ELITE))], c*0.001f);
 			}
 			generation++;
 		}
@@ -100,12 +101,22 @@ public class TrainedEvaluationTrainer{
 	}
 	
 	/** crosses over two TrainedEvaluations */
-	private static TrainedEvaluation crossover(TrainedEvaluation mother, TrainedEvaluation father){
+	private static TrainedEvaluation crossover(TrainedEvaluation mother, TrainedEvaluation father, float mutationBoost){
 		int[] weights = new int[mother.getNeededWeights()];
 		for(int c=0; c<weights.length; c++){
 			weights[c] = RNG.nextBoolean()?mother.getWeights()[c]:father.getWeights()[c];
-			if(RNG.nextFloat()<MUTATION_RATE){
-				weights[c] = TrainedEvaluation.randWeight();
+			if(RNG.nextFloat()<MUTATION_RATE+mutationBoost){
+				int mutationMode = RNG.nextInt(2 + 1);
+				if(mutationMode == 0){//Reroll Weight
+					weights[c] = TrainedEvaluation.randWeight();
+				}
+				else if(mutationMode == 1){//Flip Sign of Weight
+					weights[c] = -weights[c];
+				}
+				else if(mutationMode == 2){//Add Random value
+					weights[c] += RNG.nextInt(TrainedEvaluation.WEIGHT_BOUND)-(TrainedEvaluation.WEIGHT_BOUND/2);
+					weights[c] = weights[c]%TrainedEvaluation.WEIGHT_BOUND;
+				}
 			}
 		}
 		TrainedEvaluation child = new TrainedEvaluation(weights);

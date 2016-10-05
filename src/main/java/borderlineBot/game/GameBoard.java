@@ -149,6 +149,18 @@ public class GameBoard{
 		return clone(this.activePlayer);
 	}
 	
+	/** Returns Game Board with executed null move. Those are not Legal. */
+	public synchronized GameBoard nullMove(){
+		Tile[][] newBoard = new Tile[board.length][board[0].length];
+		for(int cy=0; cy<board.length; cy++){
+			for(int cx=0; cx<board[0].length; cx++){
+				newBoard[cy][cx] = board[cy][cx];
+			}
+		}
+		GameBoard newGameBoard = new GameBoard(getView(), newBoard, this.activePlayer.getOpponent(), this.turn);
+		return newGameBoard;
+	}
+	
 	/** Returns GameBoard which is equivalent to this with the given Move made, if Move illegal returns null */
 	public synchronized GameBoard move(Move move){
 		if(move.checkLegal(this)){
@@ -415,7 +427,7 @@ public class GameBoard{
 		
 		
 		/** Constructs new Move (based on Local View) */
-		private Move(Player player, Point unit, Direction moveDir, GameBoard board){
+		protected Move(Player player, Point unit, Direction moveDir, GameBoard board){
 			this.player = player;
 			if(board.getView().isSame(LOCAL_VIEW) || board.getView().isSame(Player.NONE)){
 				this.unit = unit;
@@ -426,7 +438,6 @@ public class GameBoard{
 				this.moveDir = moveDir.turnBack();
 			}
 		}
-		
 		
 		/** Returns the point where the unit that is to be moved is located at based on the given view */
 		public Point getUnit(GameBoard board){
