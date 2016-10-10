@@ -61,7 +61,7 @@ public class GUI extends JPanel implements Runnable, Bot{
 	
 	/** Constructs new GUI */
 	public GUI(Game game){
-		this.humanToMove = Player.NONE;
+		this.humanToMove = Player.NON;
 		this.humanFinalMoveAction = null;
 		this.humanUnitSelected = null;
 		this.game = game;
@@ -164,7 +164,7 @@ public class GUI extends JPanel implements Runnable, Bot{
 	
 	/** Changes the Game that is shown */
 	public void setNewGame(Game game){
-		this.humanToMove = Player.NONE;
+		this.humanToMove = Player.NON;
 		this.humanFinalMoveAction = null;
 		this.humanUnitSelected = null;
 		this.game = game;
@@ -216,7 +216,7 @@ public class GUI extends JPanel implements Runnable, Bot{
 			}catch(Exception ex){}
 		}
 		Move selectedMove = humanFinalMoveAction;
-		this.humanToMove = Player.NONE;
+		this.humanToMove = Player.NON;
 		this.humanFinalMoveAction = null;
 		this.humanUnitSelected = null;
 		return selectedMove;

@@ -30,7 +30,7 @@ public class GameBoard{
 		init();
 		this.view = LOCAL_VIEW;
 		this.activePlayer = LOCAL_VIEW;
-		this.winner = Player.NONE;
+		this.winner = Player.NON;
 		this.turn = 0;
 	}
 	
@@ -77,7 +77,7 @@ public class GameBoard{
 	public Tile getTile(Point point){
 		//Determine local coordinate of point
 		Point local;
-		if(view.isSame(LOCAL_VIEW) || view.isSame(Player.NONE)){
+		if(view.isSame(LOCAL_VIEW) || view.isSame(Player.NON)){
 			local = point;
 		}
 		else{
@@ -194,7 +194,7 @@ public class GameBoard{
 	private Player checkWin(){
 		final int[] lastLines = new int[]{0, BOARD_SIZE.getY()-1};
 		Player base = view;
-		if(base.isSame(Player.NONE)){
+		if(base.isSame(Player.NON)){
 			base = LOCAL_VIEW;
 		}
 		//Check borderline
@@ -227,7 +227,7 @@ public class GameBoard{
 			}
 		}
 		//No victories
-		return Player.NONE;
+		return Player.NON;
 	}
 	
 	/** Returns the Locations (relative to the current view) where Units of the given Player are located */
@@ -373,7 +373,7 @@ public class GameBoard{
 		
 		/** Constructs new empty Tile */
 		public Tile(){
-			this.player = Player.NONE;
+			this.player = Player.NON;
 			this.unit = Unit.NONE;
 			this.isEmpty = true;
 			this.inBounds = true;
@@ -429,7 +429,7 @@ public class GameBoard{
 		/** Constructs new Move (based on Local View) */
 		protected Move(Player player, Point unit, Direction moveDir, GameBoard board){
 			this.player = player;
-			if(board.getView().isSame(LOCAL_VIEW) || board.getView().isSame(Player.NONE)){
+			if(board.getView().isSame(LOCAL_VIEW) || board.getView().isSame(Player.NON)){
 				this.unit = unit;
 				this.moveDir = moveDir;
 			}
@@ -442,7 +442,7 @@ public class GameBoard{
 		/** Returns the point where the unit that is to be moved is located at based on the given view */
 		public Point getUnit(GameBoard board){
 			Player view = board.getView();
-			if(view.isSame(LOCAL_VIEW) || view.isSame(Player.NONE)){
+			if(view.isSame(LOCAL_VIEW) || view.isSame(Player.NON)){
 				return unit;
 			}
 			else{
@@ -492,7 +492,7 @@ public class GameBoard{
 		/** Returns the direction the unit is supposed to move in based on the given view */
 		public Direction getMoveDir(GameBoard board){
 			Player view = board.getView();
-			if(view.isSame(LOCAL_VIEW) || view.isSame(Player.NONE)){
+			if(view.isSame(LOCAL_VIEW) || view.isSame(Player.NON)){
 				return moveDir;
 			}
 			else{

@@ -7,7 +7,7 @@ import lombok.Getter;
 /** Enum containing all two Players */
 public enum Player{
 	/** Neutral Player, used for debug, maybe (By default local view of Board) */
-	NONE(0, false),
+	NON(0, false),
 	/** Red Player (Player making the first move) */
 	RED(1, true),
 	/** Blue Player */

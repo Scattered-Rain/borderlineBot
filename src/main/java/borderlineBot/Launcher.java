@@ -16,6 +16,7 @@ import borderlineBot.game.GameBoard;
 import borderlineBot.game.Player;
 import borderlineBot.game.GameBoard.Move;
 import borderlineBot.gui.GUI;
+import borderlineBot.util.Constants;
 import borderlineBot.util.Direction;
 import borderlineBot.util.Point;
 import borderlineBot.util.RNG;

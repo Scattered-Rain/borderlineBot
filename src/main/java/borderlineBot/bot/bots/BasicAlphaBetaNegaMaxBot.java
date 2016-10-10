@@ -11,6 +11,7 @@ import borderlineBot.bot.moveOrderers.MoveOrderer;
 import borderlineBot.game.GameBoard;
 import borderlineBot.game.GameBoard.Move;
 import borderlineBot.game.Player;
+import borderlineBot.util.Constants;
 import borderlineBot.util.Tuple;
 import borderlineBot.util.hashing.Hasher;
 import borderlineBot.util.hashing.Hasher.Hash;
@@ -64,8 +65,8 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	private void calcMoveMultithreaded(final GameBoard board, final Move move, final List<Tuple<Move, Integer>> evals){
 		Thread t = new Thread(new Runnable(){
 			public void run(){
-				int score = Integer.MIN_VALUE;
-				score = -alphaBeta(board.move(move), depth, Integer.MIN_VALUE, Integer.MAX_VALUE);
+				int score = Constants.MIN;
+				score = -alphaBeta(board.move(move), depth, Constants.MIN, Constants.MAX);
 				evals.add(new Tuple<Move, Integer>(move, score));
 			}
 		});
@@ -74,6 +75,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	
 	/** Does Alpha Beta Nega Max */
 	private int alphaBeta(GameBoard board, int depth, int alpha, int beta){
+		List<Move> possibleMoves = orderer.orderMoves(board, board.getActivePlayer());
 		boolean replaceTableNode = false;
 		Hash hash = Hasher.hashBoard(board);
 		if(table.contains(hash)){
@@ -87,8 +89,8 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 				replaceTableNode = true;
 			}
 		}
-		if(depth==0 || board.getWinner().isLegalPlayer()){
-			Player player = board.getActivePlayer().getOpponent();
+		if(depth==0 || board.getWinner().isLegalPlayer() || possibleMoves.size()==0){
+			Player player = board.getActivePlayer();
 			if(board.getWinner().isLegalPlayer()){
 				return board.getWinner().isSame(player)?10000:-10000;
 			}
@@ -96,26 +98,22 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 				return eval.evaluate(board, player);
 			}
 		}
-		int score = Integer.MIN_VALUE;
-		for(Move move : orderer.orderMoves(board, board.getActivePlayer())){
+		for(Move move : possibleMoves){
 			int value = -alphaBeta(board.move(move), depth-1, -beta, -alpha);
-			if(value>score){
-				score = value;
+			if(value>alpha){
+				alpha = value;
 			}
-			if(score>alpha){
-				alpha = score;
-			}
-			if(score>=beta){
+			if(value>=beta){
 				break;
 			}
 		}
 		if(replaceTableNode){
-			table.replace(hash, new TranspositionNode(hash, (int)score, this.depth-depth));
+			table.replace(hash, new TranspositionNode(hash, alpha, this.depth-depth));
 		}
 		else{
-			table.put(hash, new TranspositionNode(hash, (int)score, this.depth-depth));
+			table.put(hash, new TranspositionNode(hash, alpha, this.depth-depth));
 		}
-		return score;
+		return alpha;
 	}
 	
 }

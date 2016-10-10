@@ -119,7 +119,7 @@ public class Hasher{
 				}
 				board = newBoard;
 			}
-			GameBoard out = new GameBoard(player, board, player, 0, Player.NONE);
+			GameBoard out = new GameBoard(player, board, player, 0, Player.NON);
 			return out;
 		}
 		

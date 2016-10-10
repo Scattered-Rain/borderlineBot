@@ -11,6 +11,7 @@ import borderlineBot.bot.moveOrderers.MoveOrderer;
 import borderlineBot.game.GameBoard;
 import borderlineBot.game.Player;
 import borderlineBot.game.Unit;
+import borderlineBot.game.GameBoard.Move;
 import borderlineBot.util.Direction;
 import borderlineBot.util.Point;
 
@@ -27,7 +28,7 @@ public class DebugBoard extends GameBoard{
 		this.grid = new Player[3][3];
 		for(int cy=0; cy<grid.length; cy++){
 			for(int cx=0; cx<grid[0].length; cx++){
-				grid[cy][cx] = Player.NONE;
+				grid[cy][cx] = Player.NON;
 			}
 		}
 		this.active = Player.RED;
@@ -39,9 +40,14 @@ public class DebugBoard extends GameBoard{
 		this.active = active;
 	}
 	
+	/** Returns the active Player */
+	@Override public Player getActivePlayer(){
+		return active;
+	}
+	
 	
 	/** Returns advanced version of this DebugBoard */
-	public DebugBoard move(Move moveIn){
+	@Override public DebugBoard move(Move moveIn){
 		DebugMove move = (DebugMove) moveIn;
 		Player[][] newGrid = new Player[3][3];
 		for(int cy=0; cy<grid.length; cy++){
@@ -63,15 +69,34 @@ public class DebugBoard extends GameBoard{
 	}
 	
 	/** Constructs a list containing all legal moves */
-	public List<Move> constructAllLegalDebugMoves(){
+	@Override public List<Move> generateAllLegalMoves(){
 		List<Move> out = new ArrayList<Move>();
-		if(!getWinner().isSame(Player.NONE)){
+		if(!getWinner().isSame(Player.NON)){
 			return out;
 		}
 		for(int cy=0; cy<grid.length; cy++){
 			for(int cx=0; cx<grid[0].length; cx++){
-				if(grid[cy][cx].isSame(Player.NONE)){
+				if(grid[cy][cx].isSame(Player.NON)){
 					DebugMove pot = new DebugMove(this.active, new Point(cx, cy));
+					if(pot.checkLlegal(this)){
+						out.add((Move)pot);
+					}
+				}
+			}
+		}
+		return out;
+	}
+	
+	/** Constructs a list containing all hypothetically legal moves */
+	@Override public List<Move> generateAllHypotheticalLegalMoves(Player player){
+		List<Move> out = new ArrayList<Move>();
+		if(!getWinner().isSame(Player.NON)){
+			return out;
+		}
+		for(int cy=0; cy<grid.length; cy++){
+			for(int cx=0; cx<grid[0].length; cx++){
+				if(grid[cy][cx].isSame(Player.NON)){
+					DebugMove pot = new DebugMove(player, new Point(cx, cy));
 					if(pot.checkLlegal(this)){
 						out.add((Move)pot);
 					}
@@ -84,7 +109,7 @@ public class DebugBoard extends GameBoard{
 	/** Constructs String Representation of state of DebugGame */
 	public String toString(){
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(active+"\n");
+		buffer.append("Active: "+active+", Winner: "+getWinner()+"\n");
 		for(int cy=0; cy<grid.length; cy++){
 			for(int cx=0; cx<grid[0].length; cx++){
 				buffer.append(grid[cy][cx]+" ");
@@ -117,7 +142,7 @@ public class DebugBoard extends GameBoard{
 				}
 			}
 		}
-		return Player.NONE;
+		return Player.NON;
 	}
 	
 	/** Returns whether a draw has happened */
@@ -148,7 +173,7 @@ public class DebugBoard extends GameBoard{
 		
 		/** Returns whether this Move is Legal */
 		public boolean checkLlegal(DebugBoard board){
-			if(board.grid[point.getY()][point.getX()].isSame(Player.NONE)){
+			if(board.grid[point.getY()][point.getX()].isSame(Player.NON)){
 				return true;
 			}
 			return false;
@@ -160,7 +185,7 @@ public class DebugBoard extends GameBoard{
 	public static class DebugOrderer implements MoveOrderer{
 		/** Ordered List of DebugMoves from DebugBoard */
 		public List<Move> orderMoves(GameBoard board, Player player) {
-			return ((DebugBoard)board).constructAllLegalDebugMoves();
+			return ((DebugBoard)board).generateAllHypotheticalLegalMoves(player);
 		}
 	}
 	
@@ -177,21 +202,29 @@ public class DebugBoard extends GameBoard{
 	//--statics--
 	/** Main to use the debug Board for debugging */
 	public static void main(String[] args){
-		DebugBoard board = new DebugBoard();
-		MoveOrderer orderer = new DebugOrderer();
-		EvaluationFunction eval = new DebugEvaluator();
-		Bot b = new BasicAlphaBetaNegaMaxBot(orderer, eval, 12);
-		Bot[] bots = new Bot[]{b, b};
-		int counter = 0;
-		while(!board.getWinner().isLegalPlayer() && !board.debugDraw()){
+		while(true){
+			DebugBoard board = new DebugBoard();
+			MoveOrderer orderer = new DebugOrderer();
+			EvaluationFunction eval = new DebugEvaluator();
+			Bot b = new BasicAlphaBetaNegaMaxBot(orderer, eval, 12);
+			Bot[] bots = new Bot[]{b, b};
+			int counter = 0;
+			
+			System.out.println("New Game:");
+			while(!board.getWinner().isLegalPlayer() && !board.debugDraw()){
+				System.out.println(board);
+				System.out.println();
+				Move m = bots[counter%2].move(board, Player.getIndexedPlayerList()[counter%2]);
+				board = board.move(m);
+				counter++;
+			}
 			System.out.println(board);
-			System.out.println();
-			Move m = bots[counter%2].move(board, Player.getIndexedPlayerList()[counter%2]);
-			board = board.move(m);
-			counter++;
+			if(board.getWinner().isLegalPlayer()){
+				System.out.println("TicTacToe was WON by a Player:");
+				System.out.println(board.getWinner());
+				System.exit(0);
+			}
 		}
-		System.out.println(board);
-		System.out.println(board.getWinner());
 	}
 	
 }
