@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import borderlineBot.bot.Bot;
 import borderlineBot.bot.evals.EvaluationFunction;
@@ -26,8 +27,6 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	/** The Evaluation Function used for this Bot */
 	private EvaluationFunction eval;
 	
-	/** The Transposition Table used by this Bot */
-	private TranspositionTable table;
 	/** Depth to search */
 	private int depth;
 	
@@ -37,13 +36,11 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		this.orderer = orderer;
 		this.eval = eval;
 		this.depth = depth;
-		this.table = new TranspositionTable();
 	}
 	
 	
 	/** Bot Processing */
 	public Move move(GameBoard board, Player player){
-		this.table.reset();
 		List<Tuple<Move, Integer>> evals = Collections.synchronizedList(new ArrayList<Tuple<Move, Integer>>());
 		List<Move> moves = orderer.orderMoves(board, board.getActivePlayer());
 		for(Move move : moves){
@@ -77,27 +74,14 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	private int alphaBeta(GameBoard board, int depth, int alpha, int beta){
 		//overhead
 		List<Move> possibleMoves = orderer.orderMoves(board, board.getActivePlayer());
-		boolean replaceTableNode = false;
-		Hash hash = board.hash();
 		//win/lose check
 		if(depth==0 || board.getWinner().isLegalPlayer() || possibleMoves.size()==0){
 			Player player = board.getActivePlayer();
 			if(board.getWinner().isLegalPlayer()){
-				return board.getWinner().isSame(player)?10000:-10000;
+				return board.getWinner().isSame(player)?Constants.WIN_SCORE:Constants.LOSE_SCORE;
 			}
 			else{
 				return eval.evaluate(board, player);
-			}
-		}
-		//table check
-		if(table.contains(hash)){
-			TranspositionNode node = table.get(hash);
-			node.incrementVisited();
-			if(node.isLessDeepOrEqual(this.depth-depth)){
-				return node.getScore();
-			}
-			else{
-				replaceTableNode = true;
 			}
 		}
 		//alpha beta processing
@@ -106,16 +90,9 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 			if(value>alpha){
 				alpha = value;
 			}
-			if(value>=beta){
+			if(alpha>=beta){
 				break;
 			}
-		}
-		//table management
-		if(replaceTableNode){
-			table.replace(hash, new TranspositionNode(hash, alpha, this.depth-depth));
-		}
-		else{
-			table.put(hash, new TranspositionNode(hash, alpha, this.depth-depth));
 		}
 		//return
 		return alpha;

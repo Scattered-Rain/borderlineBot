@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import lombok.Getter;
+import lombok.Setter;
 import borderlineBot.util.hashing.Hasher.Hash;
 
 /** Object for Transposition Table usage */
@@ -31,7 +32,12 @@ public class TranspositionTable {
 	
 	/** Adds given Hash to the Hash Table */
 	public void put(Hash hash, TranspositionNode node){
-		map.put(hash, node);
+		if(map.contains(hash)){
+			this.replace(hash, node);
+		}
+		else{
+			map.put(hash, node);
+		}
 	}
 	
 	/** Replaces the node reachable with the given Hash with the given Node */
@@ -55,29 +61,28 @@ public class TranspositionTable {
 		/** The score of the Node */
 		@Getter private int score;
 		
+		/** The kind of score saved in this transposition node */
+		@Getter private int flag;
+		
 		/** The depth of the node (in positive numbers, i.e. 2 is deeper in the tree than 1) */
 		@Getter private int depth;
 		
-		/** The amount of times this node has been visited during the search */
-		@Getter private int visited;
+		/**  String that can be used for debug purposes */
+		@Setter @Getter private String debugText;
 		
 		
 		/** Constructs new Transposition Node */
-		public TranspositionNode(Hash hash, int score, int depth){
+		public TranspositionNode(Hash hash, int score, int totalDepth, int depth){
 			this.hash = hash;
 			this.score = score;
-			this.depth = depth;
+			this.depth = totalDepth-depth;
 		}
 		
 		
 		/** Returns whether the depth of this Transposition node is deeper than the given depth */
-		public boolean isLessDeepOrEqual(int depth){
-			return this.depth<=depth;
-		}
-		
-		/** Increments the visited counter of this Node */
-		public void incrementVisited(){
-			this.visited++;
+		public boolean isLessDeepOrEqual(int totalDepth, int depth){
+			int cDepth = totalDepth-depth;
+			return this.depth<=cDepth;
 		}
 		
 	}

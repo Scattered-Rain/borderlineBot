@@ -15,6 +15,7 @@ import borderlineBot.game.GameBoard.Move;
 import borderlineBot.util.Direction;
 import borderlineBot.util.Point;
 import borderlineBot.util.hashing.Hasher;
+import borderlineBot.util.hashing.Hasher.Hash;
 
 /** Debug Game Board running a way simpler game. Needs its own Evaluation Function. */
 public class DebugBoard extends GameBoard{
@@ -26,6 +27,7 @@ public class DebugBoard extends GameBoard{
 	
 	/** Initializes new Board */
 	public DebugBoard(){
+		super(Player.RED, hashHack(null), Player.RED, 0, Player.NON);
 		this.grid = new Player[3][3];
 		for(int cy=0; cy<grid.length; cy++){
 			for(int cx=0; cx<grid[0].length; cx++){
@@ -36,8 +38,8 @@ public class DebugBoard extends GameBoard{
 	}
 	
 	/** Constructs new DebugBoard with given qualities */
-	public DebugBoard(Player[][] grid, Player active, Tile[][] hashHack, Player moving){
-		super(Player.RED, hashHack, active, 0, moving);
+	public DebugBoard(Player[][] grid, Player active, Tile[][] hashHack){
+		super(Player.RED, hashHack, active, 0, Player.NON);
 		this.grid = grid;
 		this.active = active;
 	}
@@ -46,7 +48,6 @@ public class DebugBoard extends GameBoard{
 	@Override public Player getActivePlayer(){
 		return active;
 	}
-	
 	
 	/** Returns advanced version of this DebugBoard */
 	@Override public DebugBoard move(Move moveIn){
@@ -58,21 +59,23 @@ public class DebugBoard extends GameBoard{
 			}
 		}
 		newGrid[move.getPoint().getY()][move.getPoint().getX()] = move.getPlayer();
+		return new DebugBoard(newGrid, this.getActivePlayer().getOpponent(), hashHack(newGrid));
+	}
+	
+	/** Createse Tile grid stroing tictactoe game */
+	private static Tile[][] hashHack(Player[][] grid){
 		Tile[][] t = new Tile[GameBoard.BOARD_SIZE.getY()][GameBoard.BOARD_SIZE.getX()];
 		for(int cy=0; cy<t.length; cy++){
 			for(int cx=0; cx<t[0].length; cx++){
 				t[cy][cx] = new Tile();
-				if(cy<3 && cx<3){
-					if(!grid[cy][cx].isLegalPlayer()){
-						t[cy][cx] = new Tile();
-					}
-					else{
+				if(grid!=null && cy<3 && cx<3){
+					if(grid[cy][cx].isLegalPlayer()){
 						t[cy][cx] = new Tile(grid[cy][cx], Unit.ONE);
 					}
 				}
 			}
 		}
-		return new DebugBoard(newGrid, move.player.getOpponent(), t, super.getActivePlayer());
+		return t;
 	}
 	
 	/** Constructs a list containing all legal moves */
@@ -199,7 +202,10 @@ public class DebugBoard extends GameBoard{
 	/** Debug Evaluation Function */
 	public static class DebugEvaluator implements EvaluationFunction{
 		public int evaluate(GameBoard board, Player player) {
-			return board.getWinner().isSame(player)?1000:-1000;
+			if(board.getWinner().isLegalPlayer()){
+				return board.getWinner().isSame(player)?1000:-1000;
+			}
+			return 0;
 		}
 		public int generalEvaluation(GameBoard board, Player player) {
 			return 0;
@@ -218,8 +224,8 @@ public class DebugBoard extends GameBoard{
 			int counter = 0;
 			System.out.println("New Game:");
 			while(!board.getWinner().isLegalPlayer() && !board.debugDraw()){
-				System.out.println(board);
-				System.out.println();
+				//System.out.println(board);
+				//System.out.println();
 				Move m = bots[counter%2].move(board, Player.getIndexedPlayerList()[counter%2]);
 				board = board.move(m);
 				counter++;

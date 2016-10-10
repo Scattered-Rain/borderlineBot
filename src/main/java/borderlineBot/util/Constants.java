@@ -8,4 +8,9 @@ public class Constants{
 	/** Custom Integer Min Value */
 	public static final int MIN = -MAX;
 	
+	/** Generic reward for winning Game */
+	public static final int WIN_SCORE = 100000;
+	/** Generic punishment for losing game */
+	public static final int LOSE_SCORE = -WIN_SCORE;
+	
 }
