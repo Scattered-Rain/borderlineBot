@@ -1,6 +1,7 @@
 package borderlineBot.util.transpositionTable;
 
 import java.util.HashMap;
+import java.util.Hashtable;
 
 import lombok.Getter;
 import borderlineBot.util.hashing.Hasher.Hash;
@@ -9,12 +10,12 @@ import borderlineBot.util.hashing.Hasher.Hash;
 public class TranspositionTable {
 	
 	/** Object used for storage and look up of Transpositions */
-	private HashMap<Hash, TranspositionNode> map;
+	private Hashtable<Hash, TranspositionNode> map;
 	
 	
 	/** Constructor */
 	public TranspositionTable(){
-		this.map = new HashMap<Hash, TranspositionNode>();
+		this.map = new Hashtable<Hash, TranspositionNode>();
 	}
 	
 	
@@ -25,20 +26,16 @@ public class TranspositionTable {
 	
 	/** Returns the Transposition Node corresponding to the given Hash */
 	public TranspositionNode get(Hash hash){
-		TranspositionNode n = map.get(hash);
-		if(!(n.getHash().getPrimaryLong()==hash.getPrimaryLong() && n.getHash().getSecondaryLong()==hash.getSecondaryLong())){
-			System.out.println(n.getHash()+" is not: "+hash);
-		}
 		return map.get(hash);
 	}
 	
 	/** Adds given Hash to the Hash Table */
-	public synchronized void put(Hash hash, TranspositionNode node){
+	public void put(Hash hash, TranspositionNode node){
 		map.put(hash, node);
 	}
 	
 	/** Replaces the node reachable with the given Hash with the given Node */
-	public synchronized void replace(Hash hash, TranspositionNode node){
+	public void replace(Hash hash, TranspositionNode node){
 		map.replace(hash, node);
 	}
 	
@@ -74,8 +71,8 @@ public class TranspositionTable {
 		
 		
 		/** Returns whether the depth of this Transposition node is deeper than the given depth */
-		public boolean isDeeperOrEqual(int depth){
-			return this.depth>=depth;
+		public boolean isLessDeepOrEqual(int depth){
+			return this.depth<=depth;
 		}
 		
 		/** Increments the visited counter of this Node */

@@ -216,7 +216,6 @@ public class DebugBoard extends GameBoard{
 			Bot b = new BasicAlphaBetaNegaMaxBot(orderer, eval, 12);
 			Bot[] bots = new Bot[]{b, b};
 			int counter = 0;
-			
 			System.out.println("New Game:");
 			while(!board.getWinner().isLegalPlayer() && !board.debugDraw()){
 				System.out.println(board);

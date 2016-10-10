@@ -93,7 +93,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 		if(table.contains(hash)){
 			TranspositionNode node = table.get(hash);
 			node.incrementVisited();
-			if(node.isDeeperOrEqual(this.depth-depth)){
+			if(node.isLessDeepOrEqual(this.depth-depth)){
 				return node.getScore();
 			}
 			else{
