@@ -75,20 +75,11 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	
 	/** Does Alpha Beta Nega Max */
 	private int alphaBeta(GameBoard board, int depth, int alpha, int beta){
+		//overhead
 		List<Move> possibleMoves = orderer.orderMoves(board, board.getActivePlayer());
 		boolean replaceTableNode = false;
-		Hash hash = Hasher.hashBoard(board);
-		if(table.contains(hash)){
-			TranspositionNode node = table.get(hash);
-			node.incrementVisited();
-			if(node.isDeeperOrEqual(this.depth-depth)){
-				//System.out.println("Hash Break at "+(this.depth-depth)+" - Seen: "+node.getVisited());
-				return node.getScore();
-			}
-			else{
-				replaceTableNode = true;
-			}
-		}
+		Hash hash = board.hash();
+		//win/lose check
 		if(depth==0 || board.getWinner().isLegalPlayer() || possibleMoves.size()==0){
 			Player player = board.getActivePlayer();
 			if(board.getWinner().isLegalPlayer()){
@@ -98,6 +89,18 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 				return eval.evaluate(board, player);
 			}
 		}
+		//table check
+		if(table.contains(hash)){
+			TranspositionNode node = table.get(hash);
+			node.incrementVisited();
+			if(node.isDeeperOrEqual(this.depth-depth)){
+				return node.getScore();
+			}
+			else{
+				replaceTableNode = true;
+			}
+		}
+		//alpha beta processing
 		for(Move move : possibleMoves){
 			int value = -alphaBeta(board.move(move), depth-1, -beta, -alpha);
 			if(value>alpha){
@@ -107,12 +110,14 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 				break;
 			}
 		}
+		//table management
 		if(replaceTableNode){
 			table.replace(hash, new TranspositionNode(hash, alpha, this.depth-depth));
 		}
 		else{
 			table.put(hash, new TranspositionNode(hash, alpha, this.depth-depth));
 		}
+		//return
 		return alpha;
 	}
 	

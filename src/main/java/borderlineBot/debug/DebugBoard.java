@@ -14,6 +14,7 @@ import borderlineBot.game.Unit;
 import borderlineBot.game.GameBoard.Move;
 import borderlineBot.util.Direction;
 import borderlineBot.util.Point;
+import borderlineBot.util.hashing.Hasher;
 
 /** Debug Game Board running a way simpler game. Needs its own Evaluation Function. */
 public class DebugBoard extends GameBoard{
@@ -35,7 +36,8 @@ public class DebugBoard extends GameBoard{
 	}
 	
 	/** Constructs new DebugBoard with given qualities */
-	public DebugBoard(Player[][] grid, Player active, Tile[][] hasHack){
+	public DebugBoard(Player[][] grid, Player active, Tile[][] hashHack, Player moving){
+		super(Player.RED, hashHack, active, 0, moving);
 		this.grid = grid;
 		this.active = active;
 	}
@@ -61,11 +63,16 @@ public class DebugBoard extends GameBoard{
 			for(int cx=0; cx<t[0].length; cx++){
 				t[cy][cx] = new Tile();
 				if(cy<3 && cx<3){
-					t[cy][cx] = new Tile(grid[cy][cx], Unit.ONE);
+					if(!grid[cy][cx].isLegalPlayer()){
+						t[cy][cx] = new Tile();
+					}
+					else{
+						t[cy][cx] = new Tile(grid[cy][cx], Unit.ONE);
+					}
 				}
 			}
 		}
-		return new DebugBoard(newGrid, move.player.getOpponent(), t);
+		return new DebugBoard(newGrid, move.player.getOpponent(), t, super.getActivePlayer());
 	}
 	
 	/** Constructs a list containing all legal moves */
@@ -217,12 +224,18 @@ public class DebugBoard extends GameBoard{
 				Move m = bots[counter%2].move(board, Player.getIndexedPlayerList()[counter%2]);
 				board = board.move(m);
 				counter++;
+				Hasher.debugViewHash(board.hash());
 			}
 			System.out.println(board);
 			if(board.getWinner().isLegalPlayer()){
-				System.out.println("TicTacToe was WON by a Player:");
+				System.out.println("TicTacToe was WON by one of the Players:");
 				System.out.println(board.getWinner());
-				System.exit(0);
+				while(true){
+					try{
+						Thread.sleep(1000);
+					}catch(Exception ex){}
+				}
+				//System.exit(0);
 			}
 		}
 	}

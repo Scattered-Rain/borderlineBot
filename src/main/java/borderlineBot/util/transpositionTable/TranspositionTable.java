@@ -25,6 +25,10 @@ public class TranspositionTable {
 	
 	/** Returns the Transposition Node corresponding to the given Hash */
 	public TranspositionNode get(Hash hash){
+		TranspositionNode n = map.get(hash);
+		if(!(n.getHash().getPrimaryLong()==hash.getPrimaryLong() && n.getHash().getSecondaryLong()==hash.getSecondaryLong())){
+			System.out.println(n.getHash()+" is not: "+hash);
+		}
 		return map.get(hash);
 	}
 	
