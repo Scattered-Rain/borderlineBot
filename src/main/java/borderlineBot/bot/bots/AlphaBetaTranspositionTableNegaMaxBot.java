@@ -49,22 +49,16 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 	//Single Threaded
 	/** Processes in ONE Threads */
 	private Move makeMove(GameBoard board, Player player){
-		int alpha = Constants.MIN;
-		int beta = Constants.MAX;
+		final int alpha = Constants.MIN;
+		final int beta = Constants.MAX;
 		Tuple<Move, Integer> bestMove = new Tuple<Move, Integer>(null, Constants.MIN);
 		List<Move> possibleMoves = orderer.orderMoves(board);
 		int counter = 0;
 		for(Move move : possibleMoves){
 			counter++;
-			int value = -alphaBeta(board.move(move), 1, -beta, -alpha);
+			int value = -alphaBeta(board.move(move), 1, true, -beta, -alpha);
 			if(bestMove.getB()<value){
 				bestMove = new Tuple<Move, Integer>(move, value);
-			}
-			if(value>alpha){
-				alpha = value;
-			}
-			if(alpha>=beta){
-				break;
 			}
 		}
 		//System.out.println(counter+"/"+possibleMoves.size());
@@ -74,7 +68,7 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 	
 	//Actual Alpha Beta!
 	/** Does simple alpha beta processing */
-	private int alphaBeta(GameBoard board, int depth, int alpha, int beta){
+	private int alphaBeta(GameBoard board, int depth, boolean allowNullCutoff, int alpha, int beta){
 		//Get all Moves
 		List<Move> possibleMoves = orderer.orderMoves(board);
 		//Win Eval
@@ -109,12 +103,20 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 			possibleMoves.remove(bestMove);
 			possibleMoves.add(0, bestMove);
 		}
+		//Quick check for Null-Move
+		if(allowNullCutoff){
+			final int nullMoveDiscount = 2;
+			int nullValue = -alphaBeta(board.nullMove(), depth+nullMoveDiscount+1, false, -beta, -alpha);
+			if(nullValue>=beta){
+				return beta;
+			}
+		}
 		//alpha beta processing
 		Tuple<Move, Integer> bestMove = new Tuple<Move, Integer>(null, Integer.MIN_VALUE);
 		int counter = 0;
 		for(Move move : possibleMoves){
 			counter++;
-			int value = -alphaBeta(board.move(move), depth+1, -beta, -alpha);
+			int value = -alphaBeta(board.move(move), depth+1, true, -beta, -alpha);
 			if(bestMove.getB()<value){
 				bestMove = new Tuple<Move, Integer>(move, value);
 			}
@@ -122,7 +124,6 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 				alpha = value;
 			}
 			if(alpha>=beta){
-				//System.out.println(counter+"/"+possibleMoves.size());
 				break;
 			}
 		}
@@ -143,7 +144,7 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 		if(temp!=0){
 			return temp;
 		}
-		if(depth==totalDepth){
+		if(depth>=totalDepth){
 			temp = eval.evaluate(board, board.getActivePlayer());
 			return temp!=0?temp:1;
 		}

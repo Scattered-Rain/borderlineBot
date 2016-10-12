@@ -150,7 +150,7 @@ public class GameBoard{
 	}
 	
 	/** Returns Game Board with executed null move. Those are not Legal. */
-	public synchronized GameBoard nullMove(){
+	public GameBoard nullMove(){
 		Tile[][] newBoard = new Tile[board.length][board[0].length];
 		for(int cy=0; cy<board.length; cy++){
 			for(int cx=0; cx<board[0].length; cx++){
@@ -162,7 +162,7 @@ public class GameBoard{
 	}
 	
 	/** Returns GameBoard which is equivalent to this with the given Move made, if Move illegal returns null */
-	public synchronized GameBoard move(Move move){
+	public GameBoard move(Move move){
 		if(move.checkLegal(this)){
 			Player prevView = view;
 			this.view = LOCAL_VIEW;

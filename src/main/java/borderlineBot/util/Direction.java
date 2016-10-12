@@ -33,6 +33,10 @@ public enum Direction{
 		return getDirectionAt(index+2);
 	}
 	
+	/** Returns whether the given Direction is the same as this direction */
+	public boolean isDirection(Direction dir){
+		return this.index==dir.getIndex();
+	}
 	
 	//--statics--
 	/** Returns the Direction with the given index (given index equivalent to index%4) */

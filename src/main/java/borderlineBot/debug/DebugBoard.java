@@ -66,6 +66,17 @@ public class DebugBoard extends GameBoard{
 		return new DebugBoard(newGrid, this.getActivePlayer().getOpponent(), hashHack(newGrid));
 	}
 	
+	/** Enact null move */
+	@Override public DebugBoard nullMove(){
+		Player[][] newGrid = new Player[3][3];
+		for(int cy=0; cy<grid.length; cy++){
+			for(int cx=0; cx<grid[0].length; cx++){
+				newGrid[cy][cx] = grid[cy][cx];
+			}
+		}
+		return new DebugBoard(newGrid, this.getActivePlayer().getOpponent(), hashHack(newGrid));
+	}
+	
 	/** Createse Tile grid stroing tictactoe game */
 	private static Tile[][] hashHack(Player[][] grid){
 		Tile[][] t = new Tile[GameBoard.BOARD_SIZE.getY()][GameBoard.BOARD_SIZE.getX()];
@@ -200,7 +211,7 @@ public class DebugBoard extends GameBoard{
 		/** Ordered List of DebugMoves from DebugBoard */
 		public List<Move> orderMoves(GameBoard board){
 			List<Move> moves = ((DebugBoard)board).generateAllHypotheticalLegalMoves(board.getActivePlayer());
-			//Collections.shuffle(moves);
+			Collections.shuffle(moves);
 			return moves;
 		}
 	}

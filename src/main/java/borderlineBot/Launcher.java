@@ -11,6 +11,7 @@ import borderlineBot.bot.bots.RandomBot;
 import borderlineBot.bot.evals.EvaluationFunction;
 import borderlineBot.bot.evals.TrainedEvaluation;
 import borderlineBot.bot.evals.TrainedEvaluationTrainer;
+import borderlineBot.bot.moveOrderers.BasicOrderer;
 import borderlineBot.bot.moveOrderers.MoveOrderer;
 import borderlineBot.game.Game;
 import borderlineBot.game.GameBoard;
@@ -41,14 +42,9 @@ public class Launcher {
 		EvaluationFunction eval = new TrainedEvaluation(TrainedEvaluation.TRAINING_RESULTS[0]);
 		Bot[] bots = new Bot[]{
 				gui,//0
-				new RandomBot(),//1
-				new EvaluateOnePlyBot(eval),//2
-				new BasicTreeSearchBot(eval, 2),//3
-				new BasicTreeSearchBot(eval, 2),//4
-				new BasicAlphaBetaNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), eval, 4),//5
-				new AlphaBetaTranspositionTableNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), eval, 7),//6
+				new AlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 6),//1
 		};
-		Game game = new Game(bots[6], bots[6]);
+		Game game = new Game(bots[1], bots[1]);
 		gui.setNewGame(game);
 		while(!game.gameOver()){
 			try{Thread.sleep(250);}catch(Exception ex){}
