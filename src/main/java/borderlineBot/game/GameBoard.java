@@ -187,6 +187,7 @@ public class GameBoard{
 			return newGameBoard;
 		}
 		//This should never, ever happen:
+		System.out.println(move);
 		return null;
 	}
 	
@@ -441,7 +442,17 @@ public class GameBoard{
 		
 		/** Constructs new Move based on the given Hash */
 		public Move(int moveHash, GameBoard board){
-			
+			//TODO: Implement
+		}
+		
+		/** Returns a Move equivalent to this Move if done by the given Player */
+		public Move repurpose(Player player, GameBoard board){
+			if(this.player.isSame(player)){
+				return this;
+			}
+			else{
+				return new Move(player, BOARD_SIZE.substract(new Point(1, 1)).substract(unit), moveDir.turnBack(), board);
+			}
 		}
 		
 		/** Returns the point where the unit that is to be moved is located at based on the given view */
@@ -546,6 +557,21 @@ public class GameBoard{
 			int dir = this.moveDir.getIndex();
 			int tileIndex = this.unit.getY()*GameBoard.BOARD_SIZE.getX() + this.unit.getX();
 			return tileIndex*10 + dir;
+		}
+		
+		/** Returns whether the given Object equals this Move */
+		@Override public boolean equals(Object obj){
+			if(obj instanceof Move){
+				if(((Move)obj).hashMove()==hashMove()){
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		/** String of this Move */
+		public String toString(){
+			return this.unit + " " + this.moveDir + " " + this.player;
 		}
 		
 	}

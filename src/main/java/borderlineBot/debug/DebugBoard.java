@@ -198,9 +198,9 @@ public class DebugBoard extends GameBoard{
 	/** Debug Move Orderer */
 	public static class DebugOrderer implements MoveOrderer{
 		/** Ordered List of DebugMoves from DebugBoard */
-		public List<Move> orderMoves(GameBoard board, Player player){
-			List<Move> moves = ((DebugBoard)board).generateAllHypotheticalLegalMoves(player);
-			Collections.shuffle(moves);
+		public List<Move> orderMoves(GameBoard board){
+			List<Move> moves = ((DebugBoard)board).generateAllHypotheticalLegalMoves(board.getActivePlayer());
+			//Collections.shuffle(moves);
 			return moves;
 		}
 	}
@@ -211,6 +211,9 @@ public class DebugBoard extends GameBoard{
 			if(board.getWinner().isLegalPlayer()){
 				return board.getWinner().isSame(player)?Constants.WIN_SCORE:Constants.LOSE_SCORE;
 			}
+			else if(((DebugBoard)board).debugDraw()){
+				return 0;
+			}
 			return RNG.nextInt(10);
 		}
 	}
@@ -218,7 +221,10 @@ public class DebugBoard extends GameBoard{
 	//--statics--
 	/** Main to use the debug Board for debugging */
 	public static void main(String[] args){
-		while(true){
+		long start = System.currentTimeMillis();
+		int superCount = 0;
+		while(true && superCount<100){
+			superCount++;
 			DebugBoard board = new DebugBoard();
 			MoveOrderer orderer = new DebugOrderer();
 			EvaluationFunction eval = new DebugEvaluator();
@@ -233,7 +239,7 @@ public class DebugBoard extends GameBoard{
 				Move m = bots[counter%2].move(board, Player.getIndexedPlayerList()[counter%2]);
 				board = board.move(m);
 				counter++;
-				Hasher.debugViewHash(board.hash());
+				//Hasher.debugViewHash(board.hash());
 			}
 			System.out.println(board);
 			if(board.getWinner().isLegalPlayer()){
@@ -247,6 +253,7 @@ public class DebugBoard extends GameBoard{
 				//System.exit(0);
 			}
 		}
+		System.out.println(System.currentTimeMillis()-start);
 	}
 	
 }

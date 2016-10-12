@@ -1,5 +1,7 @@
 package borderlineBot.bot.bots;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import borderlineBot.bot.Bot;
@@ -10,6 +12,7 @@ import borderlineBot.game.GameBoard.Move;
 import borderlineBot.game.Player;
 import borderlineBot.util.Constants;
 import borderlineBot.util.Tuple;
+import borderlineBot.util.hashing.Hasher;
 import borderlineBot.util.hashing.Hasher.Hash;
 import borderlineBot.util.transpositionTable.TranspositionTable;
 import borderlineBot.util.transpositionTable.TranspositionTable.TranspositionNode;
@@ -40,20 +43,40 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 	/** Move Processing */
 	public Move move(GameBoard board, Player player) {
 		table.reset();
-		Tuple<Move, Integer> bestMove = new Tuple<Move, Integer>(null, Integer.MIN_VALUE);
-		List<Move> possibleMoves = orderer.orderMoves(board, board.getActivePlayer());
+		return makeMove(board, player);
+	}
+	
+	//Single Threaded
+	/** Processes in ONE Threads */
+	private Move makeMove(GameBoard board, Player player){
+		int alpha = Constants.MIN;
+		int beta = Constants.MAX;
+		Tuple<Move, Integer> bestMove = new Tuple<Move, Integer>(null, Constants.MIN);
+		List<Move> possibleMoves = orderer.orderMoves(board);
+		int counter = 0;
 		for(Move move : possibleMoves){
-			int value = -alphaBeta(board.move(move), 0, Constants.MIN, Constants.MAX);
-			if(value>bestMove.getB()){
+			counter++;
+			int value = -alphaBeta(board.move(move), 1, -beta, -alpha);
+			if(bestMove.getB()<value){
 				bestMove = new Tuple<Move, Integer>(move, value);
 			}
+			if(value>alpha){
+				alpha = value;
+			}
+			if(alpha>=beta){
+				break;
+			}
 		}
+		//System.out.println(counter+"/"+possibleMoves.size());
 		return bestMove.getA();
 	}
 	
 	
+	//Actual Alpha Beta!
 	/** Does simple alpha beta processing */
 	private int alphaBeta(GameBoard board, int depth, int alpha, int beta){
+		//Get all Moves
+		List<Move> possibleMoves = orderer.orderMoves(board);
 		//Win Eval
 		int leaf = leafCondition(board, depth);
 		if(leaf!=0){
@@ -78,18 +101,19 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 						beta = tableNode.getScore();
 					}
 				}
-				else if(tableNode.getScoreType()==TranspositionTable.TranspositionNode.EXACT_SCORE){
-					return tableNode.getScore();
-				}
-				if(alpha>=beta){
+				if(alpha>=beta || tableNode.getScoreType()==TranspositionTable.TranspositionNode.EXACT_SCORE){
 					return tableNode.getScore();
 				}
 			}
+			Move bestMove = tableNode.getBestMove().repurpose(board.getActivePlayer(), board);
+			possibleMoves.remove(bestMove);
+			possibleMoves.add(0, bestMove);
 		}
 		//alpha beta processing
-		Tuple<Move, Integer> bestMove = new Tuple<Move, Integer>(null, Constants.MIN);
-		List<Move> possibleMoves = orderer.orderMoves(board, board.getActivePlayer());
+		Tuple<Move, Integer> bestMove = new Tuple<Move, Integer>(null, Integer.MIN_VALUE);
+		int counter = 0;
 		for(Move move : possibleMoves){
+			counter++;
 			int value = -alphaBeta(board.move(move), depth+1, -beta, -alpha);
 			if(bestMove.getB()<value){
 				bestMove = new Tuple<Move, Integer>(move, value);
@@ -98,6 +122,7 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 				alpha = value;
 			}
 			if(alpha>=beta){
+				//System.out.println(counter+"/"+possibleMoves.size());
 				break;
 			}
 		}
@@ -111,6 +136,7 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 	}
 	
 	
+	//--utility--
 	/** Returns the score of this node if it is a leaf node, else 0 (score will never be == 0) */
 	private int leafCondition(GameBoard board, int depth){
 		int temp = winLoss(board);

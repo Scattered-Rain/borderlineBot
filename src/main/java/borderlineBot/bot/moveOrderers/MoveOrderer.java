@@ -1,5 +1,6 @@
 package borderlineBot.bot.moveOrderers;
 
+import java.util.Collections;
 import java.util.List;
 
 import borderlineBot.game.GameBoard;
@@ -11,7 +12,7 @@ public interface MoveOrderer{
 	
 	
 	/** Returns exhaustive list of all possible moves by the given Player ordered according to a certain heuristic (best to worst)*/
-	public List<Move> orderMoves(GameBoard board, Player player);
+	public List<Move> orderMoves(GameBoard board);
 	
 	
 	//--classes--
@@ -19,8 +20,9 @@ public interface MoveOrderer{
 	public static class DefaultMoveOrder implements MoveOrderer{
 		
 		/** Returns List of Moves as GameBoard would */
-		public List<Move> orderMoves(GameBoard board, Player player) {
-			List<Move> moves = board.generateAllHypotheticalLegalMoves(player);
+		public List<Move> orderMoves(GameBoard board) {
+			List<Move> moves = board.generateAllLegalMoves();
+			Collections.shuffle(moves);
 			return moves;
 		}
 		

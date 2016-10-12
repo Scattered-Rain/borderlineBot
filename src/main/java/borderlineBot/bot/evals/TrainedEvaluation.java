@@ -24,12 +24,7 @@ public class TrainedEvaluation implements EvaluationFunction{
 	
 	/** Array containing arrays of weights determined by former training results */
 	public static final int[][] TRAINING_RESULTS = new int[][]{
-		new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, //Basic Weights
-		new int[]{78, 38, -30, 10, 42, -84, 4, -8, 14, 26, 74, 92},//Best in Gen 4
-		new int[]{32, -38, -36, -66, 92, -26, 14, -12, -90, -64, 84, 94, }, //Best in Gen 23
-		new int[]{-28, -52, -5, 90, 47, 56, -82, -48, -86, 28, 86, -20, }, //Best Gen 28
-		new int[]{1, -84, 5, -52, 90, 46, -40, 22, -75, 28, 90, 20, }, //Best Gen 62
-		new int[]{-1, -84, -44, 52, -95, -94, -40, -68, -82, 29, 46, 7, }, //Best Gen 101
+		new int[]{1000, 1010, 1005, 1015, 100, 100, 100, 100, 100, 100, 100, 100, 10}, //Basic Weights
 	};
 	
 	/** Array containing the Evaluations that are used by the TrainedEvaluation */
@@ -55,11 +50,16 @@ public class TrainedEvaluation implements EvaluationFunction{
 	
 	/** Initializes all SubEvaluations */
 	private void initEvals(){
-		this.evals = new SubEvaluation[]{new UnitCount(), new PlayerMoveOptions(), new LineControl(), new UnitThreats()};
+		this.evals = new SubEvaluation[]{new UnitCount(), new PlayerMoveOptions(), new LineControl(), new UnitThreats(), new Random()};
 	}
 	
 	/** The actual evaluation Process */
 	public int evaluate(GameBoard board, Player player){
+		return doEvaluate(board, player)-doEvaluate(board, player.getOpponent());
+	}
+	
+	/** Does value Processing */
+	private int doEvaluate(GameBoard board, Player player){
 		int counter = 0;
 		int score = 0;
 		for(SubEvaluation eval : evals){
@@ -223,6 +223,19 @@ public class TrainedEvaluation implements EvaluationFunction{
 			return score;
 		}
 		
+	}
+	
+	
+	/** Calculates a score based on the number of hypothetical moves that either player could do */
+	private static class Random extends SubEvaluation{//Player, Opponent
+		/** Returns the number of weights this SubEvaluation will need */
+		public int getNeededWeights(){
+			return 1;
+		}
+		/** Calculates the score of this SubEvaluation for the given player, given the given weights */
+		public int evaluate(GameBoard board, Player player, int ... weights){
+			return RNG.nextInt(weights[0]);
+		}
 	}
 	
 	

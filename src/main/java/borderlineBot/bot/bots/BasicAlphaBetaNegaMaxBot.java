@@ -41,7 +41,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	/** Bot Processing */
 	public Move move(GameBoard board, Player player){
 		List<Tuple<Move, Integer>> evals = Collections.synchronizedList(new ArrayList<Tuple<Move, Integer>>());
-		List<Move> moves = orderer.orderMoves(board, board.getActivePlayer());
+		List<Move> moves = orderer.orderMoves(board);
 		for(Move move : moves){
 			calcMoveMultithreaded(board, move, evals);
 		}
@@ -72,7 +72,7 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	/** Does Alpha Beta Nega Max */
 	private int alphaBeta(GameBoard board, int depth, int alpha, int beta){
 		//overhead
-		List<Move> possibleMoves = orderer.orderMoves(board, board.getActivePlayer());
+		List<Move> possibleMoves = orderer.orderMoves(board);
 		//win/lose check
 		if(depth==0 || board.getWinner().isLegalPlayer() || possibleMoves.size()==0){
 			Player player = board.getActivePlayer();

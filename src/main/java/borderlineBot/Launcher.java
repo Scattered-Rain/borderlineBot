@@ -3,6 +3,7 @@ package borderlineBot;
 import java.util.Scanner;
 
 import borderlineBot.bot.Bot;
+import borderlineBot.bot.bots.AlphaBetaTranspositionTableNegaMaxBot;
 import borderlineBot.bot.bots.BasicAlphaBetaNegaMaxBot;
 import borderlineBot.bot.bots.BasicTreeSearchBot;
 import borderlineBot.bot.bots.EvaluateOnePlyBot;
@@ -44,9 +45,10 @@ public class Launcher {
 				new EvaluateOnePlyBot(eval),//2
 				new BasicTreeSearchBot(eval, 2),//3
 				new BasicTreeSearchBot(eval, 2),//4
-				new BasicAlphaBetaNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), eval, 8),//5
+				new BasicAlphaBetaNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), eval, 4),//5
+				new AlphaBetaTranspositionTableNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), eval, 7),//6
 		};
-		Game game = new Game(bots[5], bots[5]);
+		Game game = new Game(bots[6], bots[6]);
 		gui.setNewGame(game);
 		while(!game.gameOver()){
 			try{Thread.sleep(250);}catch(Exception ex){}

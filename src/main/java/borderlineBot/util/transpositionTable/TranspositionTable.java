@@ -12,12 +12,12 @@ import borderlineBot.util.hashing.Hasher.Hash;
 public class TranspositionTable {
 	
 	/** Object used for storage and look up of Transpositions */
-	private Hashtable<Hash, TranspositionNode> map;
+	private HashMap<Hash, TranspositionNode> map;
 	
 	
 	/** Constructor */
 	public TranspositionTable(){
-		this.map = new Hashtable<Hash, TranspositionNode>();
+		this.map = new HashMap<Hash, TranspositionNode>();
 	}
 	
 	
@@ -33,7 +33,8 @@ public class TranspositionTable {
 	
 	/** Adds given Hash to the Hash Table */
 	public void put(Hash hash, TranspositionNode node){
-		if(map.contains(hash)){
+		//if(true){return;}
+		if(map.containsKey(hash)){
 			this.replace(hash, node);
 		}
 		else{
