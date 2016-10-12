@@ -1,10 +1,12 @@
 package borderlineBot.debug;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import lombok.Getter;
 import borderlineBot.bot.Bot;
+import borderlineBot.bot.bots.AlphaBetaTranspositionTableNegaMaxBot;
 import borderlineBot.bot.bots.BasicAlphaBetaNegaMaxBot;
 import borderlineBot.bot.evals.EvaluationFunction;
 import borderlineBot.bot.moveOrderers.MoveOrderer;
@@ -12,8 +14,10 @@ import borderlineBot.game.GameBoard;
 import borderlineBot.game.Player;
 import borderlineBot.game.Unit;
 import borderlineBot.game.GameBoard.Move;
+import borderlineBot.util.Constants;
 import borderlineBot.util.Direction;
 import borderlineBot.util.Point;
+import borderlineBot.util.RNG;
 import borderlineBot.util.hashing.Hasher;
 import borderlineBot.util.hashing.Hasher.Hash;
 
@@ -194,8 +198,10 @@ public class DebugBoard extends GameBoard{
 	/** Debug Move Orderer */
 	public static class DebugOrderer implements MoveOrderer{
 		/** Ordered List of DebugMoves from DebugBoard */
-		public List<Move> orderMoves(GameBoard board, Player player) {
-			return ((DebugBoard)board).generateAllHypotheticalLegalMoves(player);
+		public List<Move> orderMoves(GameBoard board, Player player){
+			List<Move> moves = ((DebugBoard)board).generateAllHypotheticalLegalMoves(player);
+			Collections.shuffle(moves);
+			return moves;
 		}
 	}
 	
@@ -203,12 +209,9 @@ public class DebugBoard extends GameBoard{
 	public static class DebugEvaluator implements EvaluationFunction{
 		public int evaluate(GameBoard board, Player player) {
 			if(board.getWinner().isLegalPlayer()){
-				return board.getWinner().isSame(player)?1000:-1000;
+				return board.getWinner().isSame(player)?Constants.WIN_SCORE:Constants.LOSE_SCORE;
 			}
-			return 0;
-		}
-		public int generalEvaluation(GameBoard board, Player player) {
-			return 0;
+			return RNG.nextInt(10);
 		}
 	}
 	
@@ -219,7 +222,8 @@ public class DebugBoard extends GameBoard{
 			DebugBoard board = new DebugBoard();
 			MoveOrderer orderer = new DebugOrderer();
 			EvaluationFunction eval = new DebugEvaluator();
-			Bot b = new BasicAlphaBetaNegaMaxBot(orderer, eval, 12);
+			//Bot b = new BasicAlphaBetaNegaMaxBot(orderer, eval, 12);
+			Bot b = new AlphaBetaTranspositionTableNegaMaxBot(orderer, eval, 12);
 			Bot[] bots = new Bot[]{b, b};
 			int counter = 0;
 			System.out.println("New Game:");

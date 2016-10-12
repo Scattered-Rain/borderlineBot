@@ -26,7 +26,6 @@ public class BasicAlphaBetaNegaMaxBot implements Bot{
 	private MoveOrderer orderer;
 	/** The Evaluation Function used for this Bot */
 	private EvaluationFunction eval;
-	
 	/** Depth to search */
 	private int depth;
 	

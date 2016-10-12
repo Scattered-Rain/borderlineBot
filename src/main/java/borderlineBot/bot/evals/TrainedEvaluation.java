@@ -58,12 +58,6 @@ public class TrainedEvaluation implements EvaluationFunction{
 		this.evals = new SubEvaluation[]{new UnitCount(), new PlayerMoveOptions(), new LineControl(), new UnitThreats()};
 	}
 	
-	
-	/** Evaluation Process taking into account the opponents score */
-	public int generalEvaluation(GameBoard board, Player player) {
-		return evaluate(board, player)-evaluate(board, player.getOpponent());
-	}
-	
 	/** The actual evaluation Process */
 	public int evaluate(GameBoard board, Player player){
 		int counter = 0;

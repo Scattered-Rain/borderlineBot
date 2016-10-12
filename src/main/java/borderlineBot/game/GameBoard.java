@@ -439,6 +439,11 @@ public class GameBoard{
 			}
 		}
 		
+		/** Constructs new Move based on the given Hash */
+		public Move(int moveHash, GameBoard board){
+			
+		}
+		
 		/** Returns the point where the unit that is to be moved is located at based on the given view */
 		public Point getUnit(GameBoard board){
 			Player view = board.getView();
@@ -533,6 +538,14 @@ public class GameBoard{
 				return false;
 			}
 			return true;
+		}
+		
+		/** Returns a unique hash of the Move (Makes assumption that move is not inherently hypothetical) */
+		public int hashMove(){
+			//TODO: Make View Prove.
+			int dir = this.moveDir.getIndex();
+			int tileIndex = this.unit.getY()*GameBoard.BOARD_SIZE.getX() + this.unit.getX();
+			return tileIndex*10 + dir;
 		}
 		
 	}

@@ -5,6 +5,7 @@ import java.util.Hashtable;
 
 import lombok.Getter;
 import lombok.Setter;
+import borderlineBot.game.GameBoard.Move;
 import borderlineBot.util.hashing.Hasher.Hash;
 
 /** Object for Transposition Table usage */
@@ -62,28 +63,49 @@ public class TranspositionTable {
 		@Getter private int score;
 		
 		/** The kind of score saved in this transposition node */
-		@Getter private int flag;
+		@Getter private int scoreType;
 		
 		/** The depth of the node (in positive numbers, i.e. 2 is deeper in the tree than 1) */
 		@Getter private int depth;
+		
+		/** The best Move that was determined by in the node when creating this Hash (may be null) */
+		@Getter private Move bestMove;
 		
 		/**  String that can be used for debug purposes */
 		@Setter @Getter private String debugText;
 		
 		
 		/** Constructs new Transposition Node */
-		public TranspositionNode(Hash hash, int score, int totalDepth, int depth){
+		public TranspositionNode(Hash hash, int depth, Move bestMove, int score, int alpha, int beta){
 			this.hash = hash;
 			this.score = score;
-			this.depth = totalDepth-depth;
+			this.depth = depth;
+			this.bestMove = bestMove;
+			if(alpha<score && score<beta){
+				this.scoreType = EXACT_SCORE;
+			}
+			else if(score<alpha){
+				this.scoreType = UPPER_BOUND;
+			}
+			else if(beta<score){
+				this.scoreType = LOWER_BOUND;
+			}
 		}
 		
 		
 		/** Returns whether the depth of this Transposition node is deeper than the given depth */
-		public boolean isLessDeepOrEqual(int totalDepth, int depth){
-			int cDepth = totalDepth-depth;
-			return this.depth<=cDepth;
+		public boolean appropriate(int depth){
+			return this.depth<=depth;
 		}
+		
+		
+		//--statics--
+		/** Indicates that the Score refers to a lower bound */
+		public static final int LOWER_BOUND = 1;
+		/** Indicates that the Score refers to an upper bound */
+		public static final int UPPER_BOUND = 2;
+		/** Indicates that the Score refers to the exact score */
+		public static final int EXACT_SCORE = 3;
 		
 	}
 	
