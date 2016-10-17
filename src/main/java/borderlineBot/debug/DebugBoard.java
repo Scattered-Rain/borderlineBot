@@ -245,7 +245,7 @@ public class DebugBoard extends GameBoard{
 			int counter = 0;
 			System.out.println("New Game:");
 			while(!board.getWinner().isLegalPlayer() && !board.debugDraw()){
-				//System.out.println(board);
+				System.out.println(board);
 				//System.out.println();
 				Move m = bots[counter%2].move(board, Player.getIndexedPlayerList()[counter%2]);
 				board = board.move(m);

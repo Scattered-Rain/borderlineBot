@@ -39,7 +39,7 @@ public class Launcher {
 	/** Launch for actual Program */
 	private static  void launch(){
 		GUI gui = new GUI(null);
-		EvaluationFunction eval = new TrainedEvaluation(TrainedEvaluation.TRAINING_RESULTS[0]);
+		EvaluationFunction eval = new TrainedEvaluation(TrainedEvaluation.TRAINING_RESULTS[6]);
 		Bot[] bots = new Bot[]{
 				gui,//0
 				new AlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 6),//1

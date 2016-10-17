@@ -25,6 +25,15 @@ public class TrainedEvaluation implements EvaluationFunction{
 	/** Array containing arrays of weights determined by former training results */
 	public static final int[][] TRAINING_RESULTS = new int[][]{
 		new int[]{1000, 1010, 1005, 1015, 100, 100, 100, 100, 100, 100, 100, 100, 10}, //Basic Weights
+		new int[]{79, 86, 75, 94, 92, 14, 75, 30, 29, 44, 68, 11, 78},//1st Gen
+		new int[]{4, 36, 75, 94, 98, 95, 75, 19, 29, 44, 68, 11, 78},//2nd Gen
+		new int[]{79, 44, 4, 38, 92, 39, 76, 30, 18, 71, 72, 83, 78},//3rd Gen
+		new int[]{79, 86, 97, 94, 92, 14, 76, 30, 4, 44, 68, 83, 78},//4th Gen
+		new int[]{81, 83, 84, 40, 42, 85, 86, 68, 55, 97, 27, 41, 20},//5th Gen
+		new int[]{79, 86, 97, 94, 3, 39, 77, 30, 18, 44, 72, 83, 78},//6th Gen
+		new int[]{},//7th Gen
+		new int[]{},//8th Gen
+		new int[]{},//9th Gen
 	};
 	
 	/** Array containing the Evaluations that are used by the TrainedEvaluation */
@@ -234,7 +243,7 @@ public class TrainedEvaluation implements EvaluationFunction{
 		}
 		/** Calculates the score of this SubEvaluation for the given player, given the given weights */
 		public int evaluate(GameBoard board, Player player, int ... weights){
-			return RNG.nextInt(weights[0]);
+			return RNG.nextInt(weights[0]+1);
 		}
 	}
 	

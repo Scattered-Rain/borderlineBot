@@ -1,8 +1,10 @@
 package borderlineBot.bot.evals;
 
 import borderlineBot.bot.Bot;
+import borderlineBot.bot.bots.AlphaBetaTranspositionTableNegaMaxBot;
 import borderlineBot.bot.bots.BasicAlphaBetaNegaMaxBot;
 import borderlineBot.bot.bots.EvaluateOnePlyBot;
+import borderlineBot.bot.moveOrderers.BasicOrderer;
 import borderlineBot.bot.moveOrderers.MoveOrderer;
 import borderlineBot.game.Game;
 import borderlineBot.game.GameBoard.Move;
@@ -13,16 +15,21 @@ import borderlineBot.util.Tuple;
 public class TrainedEvaluationTrainer{
 	
 	/** The size of the population */
-	private static final int POPULATION = 25;
+	private static final int POPULATION = 10;
 	
 	/** The fraction of the population which represents the Elite */
 	private static final float ELITE = 0.4f;
 	
 	/** Number of ply after which game is declared a draw */
-	private static final int DRAW = 100;
+	private static final int DRAW = 25;
 	
 	/** Mutation Rate for crossover */
 	private static final float MUTATION_RATE = 0.05f;
+	
+	/** Train Trained Evaluation */
+	public static void main(String[] args){
+		trainEvaluation();
+	}
 	
 	
 	/** Initializes Training procedure for TrainedEval */
@@ -32,7 +39,7 @@ public class TrainedEvaluationTrainer{
 		for(int c=0; c<pop.length; c++){
 			pop[c] = new TrainedEvaluation();
 		}
-		//pop[0] = new TrainedEvaluation(TrainedEvaluation.TRAINING_RESULTS[0]);
+		pop[0] = new TrainedEvaluation(TrainedEvaluation.TRAINING_RESULTS[2]);
 		//Execute training
 		int generation = 0;
 		final int[] threadCounter = new int[]{0, 0};
@@ -71,7 +78,8 @@ public class TrainedEvaluationTrainer{
 			}
 			//Wait till all matches have ended
 			while(threadCounter[0]<threadCounter[1]-3){
-				try{Thread.sleep(10);}catch(Exception ex){}
+				//System.out.println(threadCounter[0]+" / "+threadCounter[1]);
+				try{Thread.sleep(1000);}catch(Exception ex){}
 			}
 			//sort the population
 			for(int c=0; c<comps.length; c++){
@@ -96,7 +104,7 @@ public class TrainedEvaluationTrainer{
 	
 	/** Actually builds a Bot based on the given Evaluation function */
 	private static Bot injectEval(TrainedEvaluation eval){
-		Bot bot = new BasicAlphaBetaNegaMaxBot(new MoveOrderer.DefaultMoveOrder(), eval, 2);
+		Bot bot = new AlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 2);
 		return bot;
 	}
 	
@@ -106,15 +114,12 @@ public class TrainedEvaluationTrainer{
 		for(int c=0; c<weights.length; c++){
 			weights[c] = RNG.nextBoolean()?mother.getWeights()[c]:father.getWeights()[c];
 			if(RNG.nextFloat()<MUTATION_RATE+mutationBoost){
-				int mutationMode = RNG.nextInt(2 + 1);
+				int mutationMode = RNG.nextInt(1 + 1);
 				if(mutationMode == 0){//Reroll Weight
 					weights[c] = TrainedEvaluation.randWeight();
 				}
-				else if(mutationMode == 1){//Flip Sign of Weight
-					weights[c] = -weights[c];
-				}
-				else if(mutationMode == 2){//Add Random value
-					weights[c] += RNG.nextInt(TrainedEvaluation.WEIGHT_BOUND)-(TrainedEvaluation.WEIGHT_BOUND/2);
+				else if(mutationMode == 1){//Add Random value
+					weights[c] += RNG.nextInt(TrainedEvaluation.WEIGHT_BOUND);
 					weights[c] = weights[c]%TrainedEvaluation.WEIGHT_BOUND;
 				}
 			}

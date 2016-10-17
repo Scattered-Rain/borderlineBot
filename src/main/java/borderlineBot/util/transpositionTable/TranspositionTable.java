@@ -66,7 +66,7 @@ public class TranspositionTable {
 		/** The kind of score saved in this transposition node */
 		@Getter private int scoreType;
 		
-		/** The depth of the node (in positive numbers, i.e. 2 is deeper in the tree than 1) */
+		/** The depth of the node */
 		@Getter private int depth;
 		
 		/** The best Move that was determined by in the node when creating this Hash (may be null) */
@@ -96,7 +96,7 @@ public class TranspositionTable {
 		
 		/** Returns whether the depth of this Transposition node is deeper than the given depth */
 		public boolean appropriate(int depth){
-			return this.depth<=depth;
+			return this.depth>=depth;
 		}
 		
 		
