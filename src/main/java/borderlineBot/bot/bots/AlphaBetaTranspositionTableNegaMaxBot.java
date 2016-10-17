@@ -32,7 +32,8 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 	private TranspositionTable table;
 	
 	private int nodesVisited;
-	private int debugVal;
+	private int transpositionStrike;
+	private int niceOrdering;
 	
 	/** Constructs new */
 	public AlphaBetaTranspositionTableNegaMaxBot(MoveOrderer orderer, EvaluationFunction eval, int depth){
@@ -44,10 +45,12 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 	
 	
 	/** Move Processing */
-	public synchronized Move move(GameBoard board, Player player) {
-		table.reset();
+	public Move move(GameBoard board, Player player){
 		this.nodesVisited = 0;
-		this.debugVal = 0;
+		this.transpositionStrike = 0;
+		this.niceOrdering = 0;
+		table.reset();
+		table = new TranspositionTable();
 		return makeMove(board, player, totalDepth);
 	}
 	
@@ -57,7 +60,7 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 		int alpha = Constants.MIN;
 		int beta = Constants.MAX;
 		Tuple<Move, Integer> bestMove = alphaBeta(board, depth, true, -beta, -alpha);
-		System.out.println(nodesVisited+" "+debugVal);
+		System.out.println("Score: "+bestMove.getB()+", Nodes: "+nodesVisited+", Transposition eStrikes: "+transpositionStrike+", Nice Orderings: "+niceOrdering);
 		return bestMove.getA();
 	}
 	
@@ -93,7 +96,7 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 					}
 				}
 				if(alpha>=beta || tableNode.getScoreType()==TranspositionTable.TranspositionNode.EXACT_SCORE){
-					this.debugVal++;
+					this.transpositionStrike++;
 					return new Tuple<Move, Integer>(tableNode.getBestMove(), tableNode.getScore());
 				}
 			}
@@ -122,6 +125,9 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 				alpha = value;
 			}
 			if(alpha>=beta){
+				if(counter==1){
+					niceOrdering++;
+				}
 				break;
 			}
 		}
@@ -140,7 +146,7 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 	private int leafCondition(GameBoard board, int depth){
 		int temp = ClearWinLossEval.clearWinLossEval(board, board.getActivePlayer());
 		if(temp!=0){
-			return temp;
+			return temp+depth;
 		}
 		if(depth<=0){
 			temp = eval.evaluate(board, board.getActivePlayer());

@@ -241,7 +241,8 @@ public class DebugBoard extends GameBoard{
 			EvaluationFunction eval = new DebugEvaluator();
 			//Bot b = new BasicAlphaBetaNegaMaxBot(orderer, eval, 12);
 			Bot b = new AlphaBetaTranspositionTableNegaMaxBot(orderer, eval, 12);
-			Bot[] bots = new Bot[]{b, b};
+			Bot c = new AlphaBetaTranspositionTableNegaMaxBot(orderer, eval, 12);
+			Bot[] bots = new Bot[]{b, c};
 			int counter = 0;
 			System.out.println("New Game:");
 			while(!board.getWinner().isLegalPlayer() && !board.debugDraw()){

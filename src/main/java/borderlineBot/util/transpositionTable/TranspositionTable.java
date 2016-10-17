@@ -33,8 +33,8 @@ public class TranspositionTable {
 	
 	/** Adds given Hash to the Hash Table */
 	public void put(Hash hash, TranspositionNode node){
-		//if(true){return;}
 		if(map.containsKey(hash)){
+			//System.out.println(hash.toString()+" "+map.get(hash).getHash().toString()+" "+map.size());
 			this.replace(hash, node);
 		}
 		else{

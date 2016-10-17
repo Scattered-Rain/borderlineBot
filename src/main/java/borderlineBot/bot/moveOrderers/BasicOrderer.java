@@ -33,7 +33,7 @@ public class BasicOrderer implements MoveOrderer{
 		other = new ArrayList<Move>();
 		//Moving Up
 		for(Move move : moves){
-			if(move.getMoveDir(board).isDirection(Direction.UP)){
+			if(move.getMoveDir(board).isDirection(board.getMovingDirection(board.getActivePlayer()))){
 				out.add(move);
 			}
 			else{
