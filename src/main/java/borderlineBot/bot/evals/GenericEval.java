@@ -56,13 +56,37 @@ public class GenericEval implements EvaluationFunction{
 			}
 		}
 		
-		ttl.update(board, 2);
-		ttl.update(board, 3);
-		ttl.print(board, Player.BLU, 3);
+		
+		float scoreThreatenedTilesByPlayer = 0;
+		Player[] players = new Player[]{player, player.getOpponent()};
+		for(int c=0; c<players.length; c++){
+			for(int cy=0; cy<ttlGrid.length; cy++){
+				for(int cx=0; cx<ttlGrid[cy].length; cx++){
+					Point p = new Point(cx, cy);
+					if(ttlGrid[cy][cx].containsThreat(board, players[c], 1)){
+						boolean realThreat = false;
+						for(ThreatTile tt : ttlGrid[cy][cx].getList()){
+							if(tt.getOwnerTile(board).getPlayer().isSame(players[c])){
+								Point orp = tt.getDirectThreatOrigin();
+								if(!ttlGrid[orp.getY()][orp.getX()].containsThreat(board, players[c].getOpponent(), 1)){
+									realThreat = true;
+									break;
+								}
+							}
+						}
+						if(realThreat){
+							float val = c==0?1:-1;
+							scoreThreatenedTilesByPlayer += val;
+						}
+					}
+				}
+			}
+		}
 		
 		
 		
-		return (int)(scoreOneUnits*1000.0f + scoreTwoUnits*1200.0f + scoreMoveOptions*5.0f + -scoreThreatOneUnits*200 + -scoreThreatTwoUnits*300);
+		
+		return (int)(scoreOneUnits*1000.0f + scoreTwoUnits*1200.0f + scoreMoveOptions*5.0f + -scoreThreatOneUnits*200 + -scoreThreatTwoUnits*300 + scoreThreatenedTilesByPlayer*10);
 	}
 	
 }

@@ -31,6 +31,9 @@ public class AlphaBetaTranspositionTableNegaMaxBot implements Bot{
 	/** The transposition Table used by this Bot */
 	private TranspositionTable table;
 	
+	/** List storing the best Moves for each Iteration */
+	private List<Move> bestIterative;
+	
 	private int nodesVisited;
 	private int transpositionStrike;
 	private int niceOrdering;

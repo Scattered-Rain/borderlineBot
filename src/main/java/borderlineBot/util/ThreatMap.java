@@ -34,6 +34,12 @@ public class ThreatMap {
 		ThreatTileList.updateThreats(board, this.ttlGrid, ply);
 	}
 	
+	/** Returns whether this Threat Map has a winning Path for either Player, returns earliest Path if so */
+	public Player hasWinningPath(GameBoard board){
+		
+		return Player.NON;
+	}
+	
 	/** Prints the Threat Map with given parameters */
 	public void print(GameBoard board, Player player, int ply){
 		for(int cy=0; cy<ttlGrid.length; cy++){
@@ -87,6 +93,16 @@ public class ThreatMap {
 			this.containsOwner = containsOwner;
 			this.jumpTo = jumpTo;
 			this.directThreatOrigin = directThreatOrigin;
+		}
+		
+		/** Returns the ThreatTile representing the direct Threat Origin */
+		public ThreatTile getDTOrigin(ThreatTileList[][] ttl){
+			for(ThreatTile tt : ttl[directThreatOrigin.getY()][directThreatOrigin.getX()].getList()){
+				if(tt.getOwner().equals(owner)){
+					return tt;
+				}
+			}
+			return null;
 		}
 		
 		/** Returns the Tile of the owner */
