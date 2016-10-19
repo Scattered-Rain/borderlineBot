@@ -43,9 +43,9 @@ public class Launcher {
 		EvaluationFunction eval = new GenericEval();
 		Bot[] bots = new Bot[]{
 				gui,//0
-				new AlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 9),//1
+				new AlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 6),//1
 		};
-		Game game = new Game(bots[1], bots[1]);
+		Game game = new Game(bots[0], bots[1]);
 		gui.setNewGame(game);
 		while(!game.gameOver()){
 			try{Thread.sleep(250);}catch(Exception ex){}
