@@ -9,6 +9,7 @@ import borderlineBot.bot.bots.BasicTreeSearchBot;
 import borderlineBot.bot.bots.EvaluateOnePlyBot;
 import borderlineBot.bot.bots.RandomBot;
 import borderlineBot.bot.evals.EvaluationFunction;
+import borderlineBot.bot.evals.GenericEval;
 import borderlineBot.bot.evals.TrainedEvaluation;
 import borderlineBot.bot.evals.TrainedEvaluationTrainer;
 import borderlineBot.bot.moveOrderers.BasicOrderer;
@@ -39,10 +40,10 @@ public class Launcher {
 	/** Launch for actual Program */
 	private static  void launch(){
 		GUI gui = new GUI(null);
-		EvaluationFunction eval = new TrainedEvaluation(TrainedEvaluation.TRAINING_RESULTS[6]);
+		EvaluationFunction eval = new GenericEval();
 		Bot[] bots = new Bot[]{
 				gui,//0
-				new AlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 6),//1
+				new AlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 7),//1
 		};
 		Game game = new Game(bots[1], bots[1]);
 		gui.setNewGame(game);

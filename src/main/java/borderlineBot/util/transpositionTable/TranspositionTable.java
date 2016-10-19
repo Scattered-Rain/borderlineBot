@@ -85,10 +85,10 @@ public class TranspositionTable {
 			if(alpha<score && score<beta){
 				this.scoreType = EXACT_SCORE;
 			}
-			else if(score<alpha){
+			else if(score<=alpha){
 				this.scoreType = UPPER_BOUND;
 			}
-			else if(beta<score){
+			else if(beta<=score){
 				this.scoreType = LOWER_BOUND;
 			}
 		}
