@@ -34,29 +34,13 @@ public class GenericEval implements EvaluationFunction{
 		//TODO: There are some bugs still left
 		
 		
-		float scoreThreatOneUnits = 0;
-		float scoreThreatTwoUnits = 0;
+		
+		
 		ThreatMap ttl = new ThreatMap(board);
 		ttl.update(board, 1);
 		ThreatTileList[][] ttlGrid = ttl.getTtlGrid();
-		for(int cy=0; cy<ttlGrid.length; cy++){
-			for(int cx=0; cx<ttlGrid[cy].length; cx++){
-				Point p = new Point(cx, cy);
-				if(!board.getTile(p).isEmpty()){
-					Tile t = board.getTile(p);
-					if(ttlGrid[cy][cx].containsThreat(board, t.getPlayer().getOpponent(), 1)){
-						if(t.getUnit().isUnit(Unit.ONE)){
-							scoreThreatOneUnits += t.getPlayer().isSame(player)?1:-1;
-						}
-						else{
-							scoreThreatTwoUnits += t.getPlayer().isSame(player)?1:-1;
-						}
-					}
-				}
-			}
-		}
-		
-		
+		float scoreThreatOneUnits = 0;
+		float scoreThreatTwoUnits = 0;
 		float scoreThreatenedTilesByPlayer = 0;
 		Player[] players = new Player[]{player, player.getOpponent()};
 		for(int c=0; c<players.length; c++){
@@ -65,12 +49,28 @@ public class GenericEval implements EvaluationFunction{
 					Point p = new Point(cx, cy);
 					if(ttlGrid[cy][cx].containsThreat(board, players[c], 1)){
 						boolean realThreat = false;
+						boolean onePen = false;
 						for(ThreatTile tt : ttlGrid[cy][cx].getList()){
 							if(tt.getOwnerTile(board).getPlayer().isSame(players[c])){
 								Point orp = tt.getDirectThreatOrigin();
-								if(!ttlGrid[orp.getY()][orp.getX()].containsThreat(board, players[c].getOpponent(), 1)){
-									realThreat = true;
-									break;
+								Point porp = tt.getJumpTo();
+								if(!ttlGrid[porp.getY()][porp.getX()].containsThreat(board, players[c].getOpponent(), 1)){
+									if(!onePen){
+										if(board.getTile(p).getPlayer().isOpponent(players[c])){
+											float uVal = c==0?1:-1;
+											if(board.getTile(p).getUnit().isUnit(Unit.ONE)){
+												scoreThreatOneUnits += uVal;
+											}
+											else{
+												scoreThreatTwoUnits += uVal;
+											}
+										}
+									}
+									if(!ttlGrid[orp.getY()][orp.getX()].containsThreat(board, players[c].getOpponent(), 1)){
+										realThreat = true;
+										break;
+									}
+									onePen = true;
 								}
 							}
 						}
@@ -86,7 +86,7 @@ public class GenericEval implements EvaluationFunction{
 		
 		
 		
-		return (int)(scoreOneUnits*1000.0f + scoreTwoUnits*1200.0f + scoreMoveOptions*5.0f + -scoreThreatOneUnits*200 + -scoreThreatTwoUnits*300 + scoreThreatenedTilesByPlayer*10);
+		return (int)(scoreOneUnits*10000.0f + scoreTwoUnits*12000.0f + scoreMoveOptions*5.0f + scoreThreatOneUnits*200 + scoreThreatTwoUnits*300 + scoreThreatenedTilesByPlayer*10);
 	}
 	
 }
