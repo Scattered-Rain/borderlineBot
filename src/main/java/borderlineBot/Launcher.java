@@ -7,6 +7,7 @@ import borderlineBot.bot.bots.AlphaBetaTranspositionTableNegaMaxBot;
 import borderlineBot.bot.bots.BasicAlphaBetaNegaMaxBot;
 import borderlineBot.bot.bots.BasicTreeSearchBot;
 import borderlineBot.bot.bots.EvaluateOnePlyBot;
+import borderlineBot.bot.bots.NewAlphaBetaTranspositionTableNegaMaxBot;
 import borderlineBot.bot.bots.RandomBot;
 import borderlineBot.bot.evals.EvaluationFunction;
 import borderlineBot.bot.evals.GenericEval;
@@ -43,11 +44,12 @@ public class Launcher {
 		EvaluationFunction eval = new GenericEval();
 		Bot[] bots = new Bot[]{
 				gui,//0
-				new AlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 6),//1
+				new NewAlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 15),//1
 		};
-		Game game = new Game(bots[0], bots[1]);
+		Game game = new Game(bots[1], bots[1]);
 		gui.setNewGame(game);
 		while(!game.gameOver()){
+			System.out.println(game.getCurrentStateClone().hash());
 			try{Thread.sleep(250);}catch(Exception ex){}
 			game.nextTurn();
 		}

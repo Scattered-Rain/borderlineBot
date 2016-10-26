@@ -41,6 +41,8 @@ public class GenericEval implements EvaluationFunction{
 		ThreatTileList[][] ttlGrid = ttl.getTtlGrid();
 		float scoreThreatOneUnits = 0;
 		float scoreThreatTwoUnits = 0;
+		float scoreProtOneUnits = 0;
+		float scoreProtTwoUnits = 0;
 		float scoreThreatenedTilesByPlayer = 0;
 		Player[] players = new Player[]{player, player.getOpponent()};
 		for(int c=0; c<players.length; c++){
@@ -65,6 +67,7 @@ public class GenericEval implements EvaluationFunction{
 												scoreThreatTwoUnits += uVal;
 											}
 										}
+										
 									}
 									if(!ttlGrid[orp.getY()][orp.getX()].containsThreat(board, players[c].getOpponent(), 1)){
 										realThreat = true;
@@ -83,10 +86,18 @@ public class GenericEval implements EvaluationFunction{
 			}
 		}
 		
+//		if(board.getTile(p).getPlayer().isSame(players[c])){
+//			float uVal = c==0?1:-1;
+//			if(board.getTile(p).getUnit().isUnit(Unit.ONE)){
+//				scoreProtOneUnits += uVal;
+//			}
+//			else{
+//				scoreProtTwoUnits += uVal;
+//			}
+//		}
 		
-		
-		
-		return (int)(scoreOneUnits*10000.0f + scoreTwoUnits*12000.0f + scoreMoveOptions*5.0f + scoreThreatOneUnits*200 + scoreThreatTwoUnits*300 + scoreThreatenedTilesByPlayer*10);
+		return (int)(scoreOneUnits*10000.0f + scoreTwoUnits*12000.0f + scoreMoveOptions*5.0f + scoreThreatOneUnits*200 + scoreThreatTwoUnits*300 + scoreThreatenedTilesByPlayer*10
+				+ scoreProtOneUnits*150f + scoreProtTwoUnits*250f);
 	}
 	
 }

@@ -8,6 +8,7 @@ import lombok.Getter;
 import borderlineBot.bot.Bot;
 import borderlineBot.bot.bots.AlphaBetaTranspositionTableNegaMaxBot;
 import borderlineBot.bot.bots.BasicAlphaBetaNegaMaxBot;
+import borderlineBot.bot.bots.NewAlphaBetaTranspositionTableNegaMaxBot;
 import borderlineBot.bot.evals.EvaluationFunction;
 import borderlineBot.bot.moveOrderers.MoveOrderer;
 import borderlineBot.game.GameBoard;
@@ -240,8 +241,8 @@ public class DebugBoard extends GameBoard{
 			MoveOrderer orderer = new DebugOrderer();
 			EvaluationFunction eval = new DebugEvaluator();
 			//Bot b = new BasicAlphaBetaNegaMaxBot(orderer, eval, 12);
-			Bot b = new AlphaBetaTranspositionTableNegaMaxBot(orderer, eval, 12);
-			Bot c = new AlphaBetaTranspositionTableNegaMaxBot(orderer, eval, 12);
+			Bot b = new NewAlphaBetaTranspositionTableNegaMaxBot(orderer, eval, 12);
+			Bot c = new NewAlphaBetaTranspositionTableNegaMaxBot(orderer, eval, 12);
 			Bot[] bots = new Bot[]{b, c};
 			int counter = 0;
 			System.out.println("New Game:");

@@ -1,7 +1,9 @@
 package borderlineBot.util.transpositionTable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -74,6 +76,8 @@ public class TranspositionTable {
 		
 		/**  String that can be used for debug purposes */
 		@Setter @Getter private String debugText;
+		
+		@Getter private List<Move> bestMoveOrdered = new ArrayList<Move>();
 		
 		
 		/** Constructs new Transposition Node */

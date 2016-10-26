@@ -163,7 +163,7 @@ public class GameBoard{
 	
 	/** Returns GameBoard which is equivalent to this with the given Move made, if Move illegal returns null */
 	public GameBoard move(Move move){
-		if(move.checkLegal(this)){
+		if(move!=null && move.checkLegal(this)){
 			Player prevView = view;
 			this.view = LOCAL_VIEW;
 			Tile[][] newBoard = new Tile[board.length][board[0].length];
