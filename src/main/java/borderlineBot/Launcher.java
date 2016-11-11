@@ -7,6 +7,7 @@ import borderlineBot.bot.bots.AlphaBetaTranspositionTableNegaMaxBot;
 import borderlineBot.bot.bots.BasicAlphaBetaNegaMaxBot;
 import borderlineBot.bot.bots.BasicTreeSearchBot;
 import borderlineBot.bot.bots.EvaluateOnePlyBot;
+import borderlineBot.bot.bots.LoveMachine;
 import borderlineBot.bot.bots.NewAlphaBetaTranspositionTableNegaMaxBot;
 import borderlineBot.bot.bots.RandomBot;
 import borderlineBot.bot.evals.EvaluationFunction;
@@ -33,7 +34,7 @@ public class Launcher {
 	
 	/** Initialize all important Systems an call Launch */
 	public static void main(String[] args){
-		HashManager.initHashManager(0);
+		//HashManager.initHashManager(0);
 		launch();
 		//TrainedEvaluationTrainer.trainEvaluation();
 	}
@@ -44,16 +45,19 @@ public class Launcher {
 		EvaluationFunction eval = new GenericEval();
 		Bot[] bots = new Bot[]{
 				gui,//0
-				new NewAlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 15),//1
+				new NewAlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 5),//1
+				new LoveMachine(),
 		};
-		Game game = new Game(bots[1], bots[1]);
+		Game game = new Game(bots[2], bots[1]);
+		//game.setH(new Hash(320741918793L, 1884882468291L).rebuild(Player.RED));
 		gui.setNewGame(game);
+		//game.flipView();
 		while(!game.gameOver()){
 			System.out.println(game.getCurrentStateClone().hash());
 			try{Thread.sleep(250);}catch(Exception ex){}
 			game.nextTurn();
 		}
-		HashManager.writeTableManager(HashManager.TABLE_HASH_FILES[0]);
+		//HashManager.writeTableManager(HashManager.TABLE_HASH_FILES[0]);
 	}
 	
 	

@@ -13,6 +13,7 @@ import borderlineBot.game.GameBoard.Move;
 import borderlineBot.game.Player;
 import borderlineBot.util.Constants;
 import borderlineBot.util.RNG;
+import borderlineBot.util.Timer;
 import borderlineBot.util.Tuple;
 import borderlineBot.util.hashing.Hasher;
 import borderlineBot.util.hashing.Hasher.Hash;
@@ -66,6 +67,7 @@ public class NewAlphaBetaTranspositionTableNegaMaxBot implements Bot{
 	//Single Threaded
 	/** Processes in ONE Threads */
 	private Move makeMove(GameBoard board, Player player, int depth){
+		this.allowedTime = Timer.getTimeToCalc();
 		this.startSearch = System.currentTimeMillis();
 		int alpha = Constants.MIN;
 		int beta = Constants.MAX;
@@ -75,13 +77,17 @@ public class NewAlphaBetaTranspositionTableNegaMaxBot implements Bot{
 			boolean doAlphaBeta = c>3;
 			Tuple<Move, Integer> thisMove = alphaBeta(board.clone(), c, false, -beta, -alpha, iteration, doAlphaBeta);
 			if(!outOfTime()){
-				System.out.println("Iteration: "+iteration+",  Move: "+bestMove.getA().toString());
 				bestMove = thisMove;
+				System.out.println("Iteration: "+iteration+",  Move: "+bestMove.getA().toString()+", Score: "+bestMove.getB());
 			}
-			if(bestMove.getB()>=Constants.WIN_SCORE-100){
+			if(bestMove.getB()>=Constants.WIN_SCORE-300){
+				Timer.usedTime((int)(System.currentTimeMillis()-startSearch));
+				System.out.println("Move: "+bestMove.getA().toString()+", Score: "+bestMove.getB()+", Time: "+Timer.remainingTime());
 				return bestMove.getA();
 			}
 		}
+		Timer.usedTime(allowedTime);
+		System.out.println("Move: "+bestMove.getA().toString()+", Score: "+bestMove.getB()+", Time: "+Timer.remainingTime());
 		return bestMove.getA();
 	}
 	
@@ -149,11 +155,11 @@ public class NewAlphaBetaTranspositionTableNegaMaxBot implements Bot{
 					bestMove = new Tuple<Move, Integer>(move, value);
 				}
 				//alpha beta processing
-				if(doAlphaBeta){
-					if(value>alpha){
-						alpha = value;
-					}
-					if(alpha>=beta){
+				if(value>alpha){
+					alpha = value;
+				}
+				if(alpha>=beta){
+					if(doAlphaBeta){
 						if(counter==1){
 							//niceOrdering++;
 						}

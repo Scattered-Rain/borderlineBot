@@ -67,7 +67,6 @@ public class GenericEval implements EvaluationFunction{
 												scoreThreatTwoUnits += uVal;
 											}
 										}
-										
 									}
 									if(!ttlGrid[orp.getY()][orp.getX()].containsThreat(board, players[c].getOpponent(), 1)){
 										realThreat = true;
@@ -79,6 +78,7 @@ public class GenericEval implements EvaluationFunction{
 						}
 						if(realThreat){
 							float val = c==0?1:-1;
+							val = val*rowDiscount(board, player, cy);
 							scoreThreatenedTilesByPlayer += val;
 						}
 					}
@@ -98,6 +98,19 @@ public class GenericEval implements EvaluationFunction{
 		
 		return (int)(scoreOneUnits*10000.0f + scoreTwoUnits*12000.0f + scoreMoveOptions*5.0f + scoreThreatOneUnits*200 + scoreThreatTwoUnits*300 + scoreThreatenedTilesByPlayer*10
 				+ scoreProtOneUnits*150f + scoreProtTwoUnits*250f);
+	}
+	
+	private float rowDiscount(GameBoard board, Player player, int row){
+		float discount = 0;
+		if(row!=board.getBorderline(player)){
+			if(board.getBorderline(player)==0){
+				discount = row;
+			}
+			else{
+				discount = GameBoard.BOARD_SIZE.getY()-row-1;
+			}
+		}
+		return discount*0.1f;
 	}
 	
 }

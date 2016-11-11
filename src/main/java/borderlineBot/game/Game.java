@@ -26,6 +26,9 @@ public class Game {
 		this.players = new Bot[]{bot0, bot1};
 	}
 	
+	public void setH(GameBoard game){
+		this.history.add(game);
+	}
 	
 	/** Advances the game by one turn */
 	public void nextTurn(){

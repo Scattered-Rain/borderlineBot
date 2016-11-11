@@ -18,17 +18,25 @@ public class LoveMachine implements Bot{
 	
 	/** Constructs new Love Machine */
 	public LoveMachine(){
+		this.mainBot = mainBot();
+		this.backup = new EvaluateOnePlyBot(new GenericEval());
+	}
+	
+	private Bot mainBot(){
 		EvaluationFunction eval = new GenericEval();
-		this.mainBot = new AlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 6);
-		this.backup = new EvaluateOnePlyBot(eval);
+		return new NewAlphaBetaTranspositionTableNegaMaxBot(new BasicOrderer(), eval, 13);//15
 	}
 	
 	
 	/** Processes Move */
 	public Move move(GameBoard board, Player player) {
-		Move move = backup.move(board, player);
-		
-		return null;
+		try{
+			return mainBot.move(board, player);
+		}catch(Exception ex){
+			System.out.println("damage");
+			this.mainBot = mainBot();
+			return backup.move(board, player);
+		}
 	}
 	
 }
